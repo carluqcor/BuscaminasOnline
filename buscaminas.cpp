@@ -1,7 +1,8 @@
 #include "buscaminas.hpp"
 #include <vector>
-#include <string.h>
+#include <string>
 #include <stdio.h>
+#include <stdlib.h>
 #include <time.h>
 
 int Buscaminas::getX(char x){
@@ -61,14 +62,20 @@ void Buscaminas::crearMatrizEscondida(){
 			for(j=0;j<10;j++){
 				if(contador!=getMinas()){
 					numero=(rand()%101);
+					std::cout<<"numero: "<<numero<<std::endl;
 					if(numero<30){
 						MatrizAux[i][j]="*";
+						contador++;
 					}
+				std::cout<<"contador: "<<contador<<std::endl;
 				}
 			}
 		}
-	}while(contador==getMinas());
+	}while(contador!=getMinas());
 
+	std::cout<<"Se han colocado las minas\n";
+	setMatrizEscondida(MatrizAux);
+	mostrarMatrizEscondida();
 	for(i=0;i<10;i++){
 		for(j=0;j<10;j++){
 			if(MatrizAux[i][j]!="*"){
@@ -84,6 +91,7 @@ void Buscaminas::crearMatrizEscondida(){
 					}
 				}
 				MatrizAux[i][j]=minas;
+				std::cout<<"Se han colocado un valor\n";
 			}
 		}
 	}
@@ -92,14 +100,14 @@ void Buscaminas::crearMatrizEscondida(){
 	setMatrizEscondida(MatrizAux);
 }
 
-//void Buscaminas::MatrizPinchar(int x, int y){}
+//void Buscaminas::MatrizPinstd::string(int x, int y){}
 
 void Buscaminas::mostrarMatrizEscondida(){
 	int i, j;
 	std::vector<std::vector<std::string> > MatrizAux = getMatrizEscondida();
 	for(i = 0; i < (int) MatrizAux.size(); i++){
 		for(j=0 ; j<(int) MatrizAux.size(); j++){
-			std::cout<<MatrizAux[i][j]<<"\t";
+			std::cout<<"|"<<MatrizAux[i][j].c_str()<<"|\t";
 		}
 		std::cout<<"\n";
 	}

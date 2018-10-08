@@ -1,8 +1,8 @@
-#ifndef buscaminas_hpp
-#define buscaminas_hpp
+#ifndef _buscaminas_hpp_
+#define _buscaminas_hpp_
 #include <iostream>
 #include <vector>
-#include <string.h>
+#include <string>
 
 class Buscaminas{
  
@@ -11,10 +11,7 @@ class Buscaminas{
 private:
 	int bombas_=20;
 	std::vector<std::vector<std::string> > MatrizEscondida = std::vector< std::vector<std::string> >(10, std::vector<std::string>(10));
-	
-
 	std::vector<std::vector<std::string> > MatrizMostrar = std::vector< std::vector<std::string> >(10, std::vector<std::string>(10));
-
 	std::string A_="A";
 	std::string B_="B";
 	std::string AB_="AB";
@@ -38,6 +35,4 @@ public:
 	void mostrarMatrizMostrar();
 
 };
-
-
 #endif
