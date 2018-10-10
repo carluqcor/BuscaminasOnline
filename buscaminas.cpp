@@ -56,7 +56,13 @@ int Buscaminas::getX(char x){
 void Buscaminas::crearMatrizEscondida(){
 	srand(time(NULL));
 	int i, j, x, y, contador=0, numero=0, minas, a, b;
-	std::vector<std::vector<std::string> > MatrizAux = getMatrizEscondida();
+	std::vector<std::vector<int > > MatrizAux ;
+	MatrizAux.resize(10);
+			for (int a = 0; a < 10; a++)
+			{
+				MatrizEscondida[a].resize(10,0);
+			}
+			MatrizAux= getMatrizEscondida();
 	do{
 		for(i=0;i<10;i++){
 			for(j=0;j<10;j++){
@@ -64,7 +70,8 @@ void Buscaminas::crearMatrizEscondida(){
 					numero=(rand()%101);
 					std::cout<<"numero: "<<numero<<std::endl;
 					if(numero<30){
-						MatrizAux[i][j]="*";
+						MatrizAux[i][j]=-1;
+						//std::cout<<MatrizAux[i][j]<<"\t";
 						contador++;
 					}
 				std::cout<<"contador: "<<contador<<std::endl;
@@ -75,28 +82,43 @@ void Buscaminas::crearMatrizEscondida(){
 
 	std::cout<<"Se han colocado las minas\n";
 	setMatrizEscondida(MatrizAux);
-	mostrarMatrizEscondida();
+	//mostrarMatrizEscondida();
+	////
+	for(i = 0; i < 10; i++){
+		for(j=0 ; j<10; j++){
+			std::cout<<"|"<<MatrizAux[i][j]<<"|\t";
+		}
+		std::cout<<"\n";
+	}
+	///
 	for(i=0;i<10;i++){
 		for(j=0;j<10;j++){
-			if(MatrizAux[i][j]!="*"){
+			if(MatrizAux[i][j]!=-1){
 				minas=0;
-				for(x=-1;x<3;i++){
-					for(y=-1;y<3;j++){
+				for(x=-1;x<2;x++){
+					for(y=-1;y<2;y++){
 						a=i-x;
 						b=j-y;
-						if((a > 0 && b > 0)  && (a < 10 && b < 10)){
-							if(MatrizAux[a][b]=="*")
+						if((a >= 0 && b >= 0)  && (a < 10 && b < 10)){
+							if(MatrizAux[a][b]==-1)
 								minas++;
 						}
 					}
 				}
 				MatrizAux[i][j]=minas;
-				std::cout<<"Se han colocado un valor\n";
+				//std::cout<<"Se han colocado un valor\n";
 			}
 		}
 	}
-
-
+	std::cout<<"Se han colocado un valor\n";
+	////
+	for(i = 0; i < 10; i++){
+		for(j=0 ; j<10; j++){
+			std::cout<<"|"<<MatrizAux[i][j]<<"|\t";
+		}
+		std::cout<<"\n";
+	}
+	///
 	setMatrizEscondida(MatrizAux);
 }
 
@@ -104,10 +126,10 @@ void Buscaminas::crearMatrizEscondida(){
 
 void Buscaminas::mostrarMatrizEscondida(){
 	int i, j;
-	std::vector<std::vector<std::string> > MatrizAux = getMatrizEscondida();
-	for(i = 0; i < (int) MatrizAux.size(); i++){
-		for(j=0 ; j<(int) MatrizAux.size(); j++){
-			std::cout<<"|"<<MatrizAux[i][j].c_str()<<"|\t";
+	std::vector<std::vector<int> > MatrizAux = getMatrizEscondida();
+	for(i = 0; i < 10; i++){
+		for(j=0 ; j<10; j++){
+			std::cout<<"|"<<MatrizAux[i][j]<<"|\t";
 		}
 		std::cout<<"\n";
 	}
@@ -115,7 +137,7 @@ void Buscaminas::mostrarMatrizEscondida(){
 
 void Buscaminas::mostrarMatrizMostrar(){
 	int i, j;
-	std::vector<std::vector<std::string> > MatrizAux = getMatrizMostrar();
+	std::vector<std::vector<std:: string> > MatrizAux = getMatrizMostrar();
 	for(i = 0; i < (int) MatrizAux.size(); i++){
 		for(j=0;j<(int) MatrizAux.size(); j++){
 			std::cout<<MatrizAux[i][j]<<"\t";

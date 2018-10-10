@@ -4,5 +4,5 @@
 int main(){
 	Buscaminas buscaminas;
 	buscaminas.crearMatrizEscondida();
-	buscaminas.mostrarMatrizEscondida();
+	//buscaminas.mostrarMatrizEscondida();
 }
