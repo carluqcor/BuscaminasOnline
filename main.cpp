@@ -21,7 +21,7 @@ int main(){
 	std::cin>>s;
 	std::cout<<"Introduzca un numero\n";
 	std::cin>>a;
-	std::cout<<"posicion=letra "<<s<<"numero "<<a<<"\n";
+	std::cout<<"posicion=letra "<<s<<"+ numero "<<a<<"\n";
 	std::cout<<"Pulse 1 para descubrir pulse 2 para poner una bandera\n";
 	std::cin>>opcion;
 	if(opcion==1)
