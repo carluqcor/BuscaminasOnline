@@ -30,8 +30,7 @@ int main(){
 		Se abre el socket 
 	---------------------------------------------------*/
   	sd = socket (AF_INET, SOCK_STREAM, 0);
-	if (sd == -1)
-	{
+	if (sd == -1){
 		perror("No se puede abrir el socket cliente\n");
     		exit (1);	
 	}
@@ -51,8 +50,7 @@ int main(){
 	-------------------------------------------------------------------*/
 	len_sockname = sizeof(sockname);
 	
-	if (connect(sd, (struct sockaddr *)&sockname, len_sockname) == -1)
-	{
+	if (connect(sd, (struct sockaddr *)&sockname, len_sockname) == -1){
 		perror ("Error de conexión");
 		exit(1);
 	}
@@ -68,8 +66,7 @@ int main(){
 	/* ------------------------------------------------------------------
 		Se transmite la información
 	-------------------------------------------------------------------*/
-	do
-	{
+	do{
         auxfds = readfds;
         salida = select(sd+1,&auxfds,NULL,NULL,NULL);
         
@@ -87,33 +84,21 @@ int main(){
             if(strcmp(buffer,"Desconexion servidor\n") == 0)
                 fin =1;
             
-        }
-        else
-        {
+        }else{
             
             //He introducido información por teclado
             if(FD_ISSET(0,&auxfds)){
                 bzero(buffer,sizeof(buffer));
                 
-                //printf("Que desea pedir? (INICIAR-PARTIDA, TIME , DAYTIME)\n"); //BLA BLA BLA
-
-
+                printf("Que desea pedir? (INICIAR-PARTIDA, TIME , DAYTIME)\n"); //BLA BLA BLA
                 fgets(buffer,sizeof(buffer),stdin);
                 
                 if(strcmp(buffer,"SALIR\n") == 0){ //Se deberia enviar al servidor tambien
                         fin = 1;
-                
-                }
-                
-                send(sd,buffer,sizeof(buffer),0);
-                
-            }
-            
-            
-        }
-        
-        
-				
+                }                
+                send(sd,buffer,sizeof(buffer),0);   
+            } 
+        }			
     }while(fin == 0);
 		
     close(sd);

@@ -1,9 +1,10 @@
-#include "buscaminas.hpp"
 #include <vector>
 #include <string>
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <locale> 
+#include "buscaminas.hpp"
 
 int Buscaminas::getX(char x){
 	switch (x){
@@ -47,10 +48,36 @@ int Buscaminas::getX(char x){
 			break;
 
 		default:
-			std::cout<<"Error, letra no reconocida, escribala en mayúscula en el rango de A a J\n";
+			std::cout<<"Error, letra no reconocida, escribala en mayúscula en el rango de A a J\n\n";
+			return -1;
 			break;
-
 	}
+}
+
+int Buscaminas::getNumero(int y){
+	if(y>0 && y<11)
+		return 1;
+	else{
+		std::cout<<"Error, elija un número en el rango de 1 a 10\n\n";
+		return 0;
+	}
+}
+
+void Buscaminas::coordenadas(char &x, int &y){
+	int comprobador;
+	std::cout<<"Introduzca las coordenadas (Letra, Numero)\n\n";
+	do{
+		std::cout<<"Introduzca una letra: ";
+		std::cin>>x;
+		comprobador=getX(x);
+	}while((std::isupper(x))==0 || (comprobador==-1));
+
+	do{
+		std::cout<<"\nIntroduzca un numero: ";
+		std::cin>>y;
+		comprobador=getNumero(y);
+	}while((std::isdigit(y))==0 && (comprobador==0));
+	std::cout<<"\nCoordenada: ("<<x<<", "<<y<<") \n";
 }
 
 void Buscaminas::crearMatrizEscondida(){
@@ -119,40 +146,27 @@ void Buscaminas::crearMatrizEscondida(){
 	setMatrizEscondida(MatrizAux);
 }
 
-void Buscaminas::MatrizPinchar(char x, int y)
-{
-	std::vector<std::vector<int > > MatrizAux1 ;
-	std::vector<std::vector<int > > MatrizAux2 ;
-
-	MatrizAux1=getMatrizEscondida();
-	MatrizAux2=getMatrizMostrar();
-
-	int a= getX(x);
+void Buscaminas::MatrizPinchar(char x, int y){
+	std::vector<std::vector<int > > MatrizAux1=getMatrizEscondida();
+	std::vector<std::vector<int > > MatrizAux2=getMatrizMostrar();
+	int a=getX(x);
 	MatrizAux2[a][y]=MatrizAux1[a][y];
-
 	setMatrizMostrar(MatrizAux2);
-
 }
 
-void Buscaminas::MatrizBandera(char x, int y, char jugador)
-{
+void Buscaminas::MatrizBandera(char x, int y, char jugador){
 	std::vector<std::vector<int > > MatrizAux ;
 	MatrizAux=getMatrizMostrar();
-	int a= getX(x);
+	int a=getX(x);
 
-	if (jugador=='A')
-	{
+	if (jugador=='A'){
 		MatrizAux[a][y]=-3;
-	}
-	else if (jugador=='B')
-	{
+	}else if (jugador=='B'){
 		MatrizAux[a][y]=-4;
 	}
-	else
-	{
+	else{
 		MatrizAux[a][y]=-5;
 	}
-
 	setMatrizMostrar(MatrizAux);
 }
 
@@ -166,6 +180,8 @@ void Buscaminas::mostrarMatrizEscondida(){
 		}
 		std::cout<<"\n";
 	}
+	std::cout<<std::endl;
+	std::cout<<std::endl;
 }
 
 void Buscaminas::mostrarMatrizMostrar(){
@@ -173,31 +189,58 @@ void Buscaminas::mostrarMatrizMostrar(){
 	std::vector<std::vector<int> > MatrizAux = getMatrizMostrar();
 	for(i = 0; i < (int) MatrizAux.size(); i++){
 		for(j=0;j<(int) MatrizAux.size(); j++){
-			if (MatrizAux[i][j]==-2)
-			{
-			std::cout<<"|"<<"-"<<"|\t";
+			if (MatrizAux[i][j]==-2){
+				std::cout<<"|"<<"-"<<"|\t";
 			}
-			else if (MatrizAux[i][j]==-1)
-			{
-			std::cout<<"|"<<"*"<<"|\t";
+			else if (MatrizAux[i][j]==-1){
+				std::cout<<"|"<<"*"<<"|\t";
 			}
-			else if (MatrizAux[i][j]==-3)
-			{
-			std::cout<<"|"<<"A"<<"|\t";
+			else if (MatrizAux[i][j]==-3){
+				std::cout<<"|"<<"A"<<"|\t";
 			}
-			else if (MatrizAux[i][j]==-4)
-			{
-			std::cout<<"|"<<"B"<<"|\t";
+			else if (MatrizAux[i][j]==-4){
+				std::cout<<"|"<<"B"<<"|\t";
 			}
-			else if (MatrizAux[i][j]==-5)
-			{
-			std::cout<<"|"<<"AB"<<"|\t";
-			}
-			else
-			{
-			std::cout<<"|"<<MatrizAux[i][j]<<"|\t";
+			else if (MatrizAux[i][j]==-5){
+				std::cout<<"|"<<"AB"<<"|\t";
+			}else{
+				std::cout<<"|"<<MatrizAux[i][j]<<"|\t";
 			}
 		}
 		std::cout<<"\n";
+	}
+	std::cout<<std::endl;
+	std::cout<<std::endl;
+}
+
+void Buscaminas::buscaminasGame(){
+	int aux=0, a, y, opcion;
+	char s, x, jugador='A';
+	crearMatrizEscondida();
+
+	mostrarMatrizEscondida();
+
+	
+	mostrarMatrizMostrar();
+
+	while(aux==0){
+		coordenadas(x,y);
+		std::cout<<"Pulse 1 para descubrir pulse 2 para poner una bandera\n";
+		std::cin>>opcion;
+		switch(opcion){
+			case 1:
+				MatrizPinchar(x, y);
+				mostrarMatrizMostrar();
+				break;
+
+			case 2:
+				MatrizBandera(x, y, jugador);
+				mostrarMatrizMostrar();
+				break;
+
+			default: 
+				std::cout<<"Opción errónea, eliga entre 1 o 2\n";
+				break;
+		}
 	}
 }

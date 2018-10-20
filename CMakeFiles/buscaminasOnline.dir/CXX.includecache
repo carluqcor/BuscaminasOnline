@@ -1,0 +1,40 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/carlos/Escritorio/Universidad/Tercero Informatica/REDES/buscaminasP1/buscaminas.cpp
+vector
+-
+string
+-
+stdio.h
+-
+stdlib.h
+-
+time.h
+-
+locale
+-
+buscaminas.hpp
+/home/carlos/Escritorio/Universidad/Tercero Informatica/REDES/buscaminasP1/buscaminas.hpp
+
+/home/carlos/Escritorio/Universidad/Tercero Informatica/REDES/buscaminasP1/buscaminas.hpp
+iostream
+-
+vector
+-
+string
+-
+
+/home/carlos/Escritorio/Universidad/Tercero Informatica/REDES/buscaminasP1/main.cpp
+buscaminas.hpp
+/home/carlos/Escritorio/Universidad/Tercero Informatica/REDES/buscaminasP1/buscaminas.hpp
+iostream
+-
+string
+-
+

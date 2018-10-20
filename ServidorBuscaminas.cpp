@@ -9,6 +9,8 @@
 #include <unistd.h>
 #include <time.h>
 #include <arpa/inet.h>
+#include <iostream>
+#include <fstream>
 
 
 #define MSG_SIZE 250
@@ -26,19 +28,24 @@ void salirCliente(int socket, fd_set * readfds, int * numClientes, int arrayClie
 
 
 
-int main( ){
+int main(){
   
 	/*---------------------------------------------------- 
-		Descriptor del socket y buffer de datos                
+		Descriptor del socket y dato de datos                
 	-----------------------------------------------------*/
 	int sd, new_sd;
 	struct sockaddr_in sockname, from;
-	char buffer[MSG_SIZE];
+	char dato[MSG_SIZE];
 	socklen_t from_len;
     fd_set readfds, auxfds;
     int salida;
     int arrayClientes[MAX_CLIENTS];
     int numClientes = 0;
+    bool registered=false, usuarioBool=false, passwordBool=false, registerBool=false;
+    char *f;
+    char *primeraPalabra, *opcionUsuario, *usuario, *opcionPassword, *password, *usuarioAux, *passwordAux;
+    std::ifstream fich;
+    std::ofstream fichAux;
 
     //contadores
     int i,j,k;
@@ -53,8 +60,7 @@ int main( ){
 		Se abre el socket 
 	---------------------------------------------------*/
   	sd = socket (AF_INET, SOCK_STREAM, 0);
-	if (sd == -1)
-	{
+	if(sd == -1){
 		perror("No se puede abrir el socket cliente\n");
     		exit (1);	
 	}
@@ -74,8 +80,7 @@ int main( ){
 	sockname.sin_port = htons(2000);
 	sockname.sin_addr.s_addr =  INADDR_ANY;
 
-	if (bind (sd, (struct sockaddr *) &sockname, sizeof (sockname)) == -1)
-	{
+	if (bind (sd, (struct sockaddr *) &sockname, sizeof (sockname)) == -1){
 		perror("Error en la operación bind");
 		exit(1);
 	}
@@ -127,43 +132,79 @@ int main( ){
                             
                             if((new_sd = accept(sd, (struct sockaddr *)&from, &from_len)) == -1){
                                 perror("Error aceptando peticiones");
-                            }
-                            else
-                            {
+                                exit(1);
+                            }else{
                                 if(numClientes < MAX_CLIENTS){ //Bienvenido al chat
                                     arrayClientes[numClientes] = new_sd;
                                     numClientes++;
                                     FD_SET(new_sd,&readfds);
                                 
-                                    strcpy(buffer, "Bienvenido al chat\n");
+                                    strcpy(dato, "Bienvenido al chat\n");
                                 
-                                    send(new_sd,buffer,strlen(buffer),0);
-                                
-                                    for(j=0; j<(numClientes-1);j++){
-                                    
-                                        bzero(buffer,sizeof(buffer));
-                                        sprintf(buffer, "Nuevo Cliente conectado: %d\n",new_sd);
-                                        send(arrayClientes[j],buffer,strlen(buffer),0);
+                                    send(new_sd,dato,strlen(dato),0);
+                                    for(j=0; j<(numClientes);j++){
+                                        bzero(dato,sizeof(dato));
+                                        sprintf(dato, "Nuevo Cliente conectado: %d\n",new_sd);
+                                        send(arrayClientes[j],dato,strlen(dato),0);
                                     }
-                                }
-                                else{ //CHAT CON MAXIMO
-                                    bzero(buffer,sizeof(buffer));
-                                    strcpy(buffer,"Demasiados clientes conectados\n");
-                                    send(new_sd,buffer,strlen(buffer),0);
+                                }else{ //CHAT CON MAXIMO
+                                    bzero(dato,sizeof(dato));
+                                    strcpy(dato,"Demasiados clientes conectados\n");
+                                    send(new_sd,dato,strlen(dato),0);
                                     close(new_sd);
+                                }   
+                            }              
+
+                            bzero(dato, sizeof(dato));
+                            int recibido = recvfrom (new_sd, &dato, sizeof(dato), 0,(struct sockaddr *) &from, &from_len);
+
+                            /* -----------------------------------------------------------------
+                                Comprobamos si hemos recibido alguna informacion 
+                            -------------------------------------------------------------------*/
+                            if (recibido > 0){  
+                                primeraPalabra=strstr(dato, " ");
+
+                                if((strcmp(primeraPalabra,"INICIAR-PARTIDA\n")==1) && ((usuarioBool==true) && (passwordBool==true)) || (registerBool==true)){
+                                    bzero(dato,sizeof(dato));
+                                    sprintf(dato, "Puede Jugar\n");
+                                    send(arrayClientes[0],dato,strlen(dato),0);
+                                }else{
+                                    bzero(dato,sizeof(dato));
+                                    sprintf(dato, "Debe registrarse o loguearse para poder jugar\n");
+                                    send(arrayClientes[0],dato,strlen(dato),0);
                                 }
-                                
-                            }
-                            
-                            
-                        }
-                        else if (i == 0){
+                                if(strcmp(primeraPalabra,"USUARIO\n")==0){
+                                    sscanf(dato, "%s %s", primeraPalabra, usuario);
+                                }else if(strcmp(primeraPalabra,"PASSWORD\n")==0){
+                                    sscanf(dato, "%s %s", primeraPalabra, password);
+                                }else if(strcmp(primeraPalabra, "REGISTRO\n")==0){
+                                    sscanf(dato, "%s %s %s %s %s", primeraPalabra, opcionUsuario, usuario, opcionPassword, password);
+                                    registered=false;
+                                    fich.open("BASEDEDATOS.txt");
+                                    while(!fich.eof()){
+                                        //fscanf(fich, "%s\t%s", usuarioAux, passwordAux);
+                                        if(strcmp(usuarioAux,usuario)==0 && strcmp(passwordAux,password)==0){
+                                            std::cout<<"Usuario ya registrado\n";
+                                            registered==true;
+                                            fich.close();
+                                        }
+                                    }   
+                                    if(registered==false){
+                                        fichAux.open("BASEDEDATOS.txt");
+                                        fichAux<<usuario<<"\t"<<password<<"\n";
+                                        fichAux.close();
+                                    }       
+                                }
+                            }else{
+                                std::cout<<"Error recibiendo datos del cliente\n";
+                            }              
+                        }else if (i == 0){
                             //Se ha introducido información de teclado
-                            bzero(buffer, sizeof(buffer));
-                            fgets(buffer, sizeof(buffer),stdin);
+                            bzero(dato, sizeof(dato));
+                            fgets(dato, sizeof(dato),stdin);
                             
                             //Controlar si se ha introducido "SALIR", cerrando todos los sockets y finalmente saliendo del servidor. (implementar)
-                            if(strcmp(buffer,"SALIR\n") == 0){
+                            if(strcmp(dato,"SALIR\n") == 0){
                              
                                 for (j = 0; j < numClientes; j++){
                                     send(arrayClientes[j], "Desconexion servidor\n", strlen("Desconexion servidor\n"),0);
@@ -171,34 +212,29 @@ int main( ){
                                     FD_CLR(arrayClientes[j],&readfds);
                                 }
                                     close(sd);
-                                    exit(-1);
-                                
-                                
-                            }
-                            //Mensajes que se quieran mandar a los clientes (implementar)
+                                    exit(-1);   
+                            }                            
+                        }else{
+                            bzero(dato,sizeof(dato));
                             
-                        } 
-                        else{
-                            bzero(buffer,sizeof(buffer));
-                            
-                            recibidos = recv(i,buffer,sizeof(buffer),0);
+                            recibidos = recv(i,dato,sizeof(dato),0);
                             
                             if(recibidos > 0){
                                 
-                                if(strcmp(buffer,"SALIR\n") == 0){
+                                if(strcmp(dato,"SALIR\n") == 0){
                                     
                                     salirCliente(i,&readfds,&numClientes,arrayClientes);
                                     
                                 }
                                 else{
                                     
-                                    sprintf(identificador,"%d: %s",i,buffer);
-                                    bzero(buffer,sizeof(buffer));
-                                    strcpy(buffer,identificador);
+                                    sprintf(identificador,"%d: %s",i,dato);
+                                    bzero(dato,sizeof(dato));
+                                    strcpy(dato,identificador);
                                     
                                     for(j=0; j<numClientes; j++)
                                         if(arrayClientes[j] != i)
-                                            send(arrayClientes[j],buffer,strlen(buffer),0);
+                                            send(arrayClientes[j],dato,strlen(dato),0);
 
                                     
                                 }
@@ -217,15 +253,13 @@ int main( ){
                 }
             }
 		}
-
 	close(sd);
 	return 0;
-	
 }
 
 void salirCliente(int socket, fd_set * readfds, int * numClientes, int arrayClientes[]){
   
-    char buffer[250];
+    char dato[250];
     int j;
     
     close(socket);
@@ -240,12 +274,12 @@ void salirCliente(int socket, fd_set * readfds, int * numClientes, int arrayClie
     
     (*numClientes)--;
     
-    bzero(buffer,sizeof(buffer));
-    sprintf(buffer,"Desconexión del cliente: %d\n",socket);
+    bzero(dato,sizeof(dato));
+    sprintf(dato,"Desconexión del cliente: %d\n",socket);
     
     for(j=0; j<(*numClientes); j++)
         if(arrayClientes[j] != socket)
-            send(arrayClientes[j],buffer,strlen(buffer),0);
+            send(arrayClientes[j],dato,strlen(dato),0);
 
 
 }

@@ -39,10 +39,6 @@ int main (){
     
     int on, ret;
 	
-	
-
-	
-	
 	/* --------------------------------------------------
 		Se abre el socket Servidor
 	---------------------------------------------------*/
@@ -94,56 +90,52 @@ int main (){
 		/*-----------------------------------------------------------------
 				Incrementamos el valor que nos ha enviado el cliente 
 				------------------------------------------------------------------*/
-      	printf("Recibido %s\n", dato);
+	      	printf("Recibido %s\n", dato);
 
-      	//if por switch
+	      	//if por switch
 
-      	primeraPalabra=strstr(dato, " ");
+	      	primeraPalabra=strstr(dato, " ");
 
-      	if((strcmp(primeraPalabra=="INICIAR-PARTIDA\n")==0) && ((usuarioBool==true) && (passwordBool==true)) || (registerBool==true)){
+	      	if((strcmp(primeraPalabra=="INICIAR-PARTIDA\n")==0) && ((usuarioBool==true) && (passwordBool==true)) || (registerBool==true)){
 
-      	}else{
-      		std::cout<<"Debe registrarse o loguearse para poder jugar\n";
-      	}
+	      	}else{
+	      		std::cout<<"Debe registrarse o loguearse para poder jugar\n";
+	      	}
 
-      	else if(strcmp(primeraPalabra=="USUARIO\n")==0){
-			sscanf(dato, "%s %s", primeraPalabra, usuario);
-      	}
+	      	else if(strcmp(primeraPalabra=="USUARIO\n")==0){
+				sscanf(dato, "%s %s", primeraPalabra, usuario);
+	      	}
 
-      	else if(strcmp(primeraPalabra=="PASSWORD\n")==0){
-      		sscanf(dato, "%s %s", primeraPalabra, password);
-      	}
+	      	else if(strcmp(primeraPalabra=="PASSWORD\n")==0){
+	      		sscanf(dato, "%s %s", primeraPalabra, password);
+	      	}
 
-      	else if(strcmp(primeraPalabra=="REGISTRO\n")==0){
-      		sscanf(dato, "%s %s %s %s %s", primeraPalabra, opcionUsuario, usuario, opcionPassword, password);
-      		registered=false;
-			std::ifstream fich;
-			std::ofstream fichAux;
-			fich.open("BASEDEDATOS.txt");
-			while(!fich.eof()){
-				std::getline(fich, f, "\t");
-				usuarioAux=(f.c_str());
-				std::getline(fich, f, "\n");
-				passwordAux=(f.c_str());
+	      	else if(strcmp(primeraPalabra=="REGISTRO\n")==0){
+	      		sscanf(dato, "%s %s %s %s %s", primeraPalabra, opcionUsuario, usuario, opcionPassword, password);
+	      		registered=false;
+				std::ifstream fich;
+				std::ofstream fichAux;
+				fich.open("BASEDEDATOS.txt");
+				while(!fich.eof()){
+					fscanf(fich, "%s\t%s", usuarioAux, passwordAux);
+					if(strcmp(usuarioAux,usuario)== && passwordAux==password){
+						std::cout<<"Usuario ya registrado\n";
+						registered==true;
+						fich.close();
+					}
+				}	
+				if(registered==false){
+					fichAux.open("BASEDEDATOS.txt");
+					fichAux<<usuario<<"\t"<<password<<"\n";
+					fichAux.close();
+				}		
+			}
+	      	
+	      	else if(strcmp(primeraPalabra=="DESCUBRIR\n")==0){}
 
-				if(usuarioAux==usuario && passwordAux==password){
-					std::cout<<"Usuario ya registrado\n";
-					registered==true;
-					fich.close();
-				}
-			}	
-			if(registered==false){
-				fichAux.open("BASEDEDATOS.txt");
-				fichAux<<usuario<<"\t"<<password<<"\n";
-				fichAux.close();
-			}		
-		}
-      	
-      	else if(strcmp(primeraPalabra=="DESCUBRIR\n")==0){}
+	      	else if(strcmp(primeraPalabra=="PONER-BANDERA\n")==0){}
 
-      	else if(strcmp(primeraPalabra=="PONER-BANDERA\n")==0){}
-
-      	else if(strcmp(primeraPalabra=="SALIR\n")==0){}
+	      	else if(strcmp(primeraPalabra=="SALIR\n")==0){}
       	else{}
 	      	      
       	/* ------------------------------------------------------------------
