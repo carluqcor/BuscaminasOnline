@@ -1,3 +1,0 @@
-/home/carlos/Escritorio/Universidad/Tercero Informatica/REDES/buscaminasP1/CMakeFiles/rebuild_cache.dir
-/home/carlos/Escritorio/Universidad/Tercero Informatica/REDES/buscaminasP1/CMakeFiles/buscaminasOnline.dir
-/home/carlos/Escritorio/Universidad/Tercero Informatica/REDES/buscaminasP1/CMakeFiles/edit_cache.dir

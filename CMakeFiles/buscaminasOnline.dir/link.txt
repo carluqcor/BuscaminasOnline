@@ -1,1 +1,0 @@
-/usr/bin/c++    -rdynamic CMakeFiles/buscaminasOnline.dir/main.cpp.o CMakeFiles/buscaminasOnline.dir/buscaminas.cpp.o  -o buscaminasOnline 
