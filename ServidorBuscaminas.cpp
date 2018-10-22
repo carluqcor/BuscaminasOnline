@@ -2,6 +2,7 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <vector>
 #include <netdb.h>
 #include <stdlib.h>
 #include <string.h>
@@ -24,7 +25,7 @@
  */
 
 void manejador(int signum);
-void salirCliente(int socket, fd_set * readfds, int * numClientes, int arrayClientes[]);
+void salirCliente(int socket, fd_set * readfds, int * numClientes, std::vector<int>cliente);
 
 
 
@@ -39,7 +40,8 @@ int main(){
 	socklen_t from_len;
     fd_set readfds, auxfds;
     int salida;
-    int arrayClientes[MAX_CLIENTS];
+    std::vector<int>clientes(MAX_CLIENTS,0);
+    //int clientes[MAX_CLIENTS];
     int numClientes = 0;
     bool registered=false, usuarioBool=false, passwordBool=false, registerBool=false;
     char *f;
@@ -126,26 +128,25 @@ int main(){
                 for(i=0; i<FD_SETSIZE; i++){
                     
                     //Buscamos el socket por el que se ha establecido la comunicación
-                    if(FD_ISSET(i, &auxfds)) {
-                        
-                        if( i == sd){
-                            
+                    if(FD_ISSET(i, &auxfds)){ 
+                        if(i == sd){      
                             if((new_sd = accept(sd, (struct sockaddr *)&from, &from_len)) == -1){
                                 perror("Error aceptando peticiones");
                                 exit(1);
                             }else{
                                 if(numClientes < MAX_CLIENTS){ //Bienvenido al chat
-                                    arrayClientes[numClientes] = new_sd;
+                                  //  clientes[numClientes].socket = new_sd;
+                                   // .estado =0;:
                                     numClientes++;
                                     FD_SET(new_sd,&readfds);
                                 
                                     strcpy(dato, "Bienvenido al chat\n");
-                                
+                                    printf("Cliente conectado\n");
                                     send(new_sd,dato,strlen(dato),0);
                                     for(j=0; j<(numClientes);j++){
                                         bzero(dato,sizeof(dato));
                                         sprintf(dato, "Nuevo Cliente conectado: %d\n",new_sd);
-                                        send(arrayClientes[j],dato,strlen(dato),0);
+                                        send(clientes[j],dato,strlen(dato),0);
                                     }
                                 }else{ //CHAT CON MAXIMO
                                     bzero(dato,sizeof(dato));
@@ -153,102 +154,71 @@ int main(){
                                     send(new_sd,dato,strlen(dato),0);
                                     close(new_sd);
                                 }   
-                            }              
-
-                            bzero(dato, sizeof(dato));
-                            int recibido = recvfrom (new_sd, &dato, sizeof(dato), 0,(struct sockaddr *) &from, &from_len);
-
-                            /* -----------------------------------------------------------------
-                                Comprobamos si hemos recibido alguna informacion 
-                            -------------------------------------------------------------------*/
-                            if (recibido > 0){  
-                                primeraPalabra=strstr(dato, " ");
-
-                                if((strcmp(primeraPalabra,"INICIAR-PARTIDA\n")==1) && ((usuarioBool==true) && (passwordBool==true)) || (registerBool==true)){
-                                    bzero(dato,sizeof(dato));
-                                    sprintf(dato, "Puede Jugar\n");
-                                    send(arrayClientes[0],dato,strlen(dato),0);
-                                }else{
-                                    bzero(dato,sizeof(dato));
-                                    sprintf(dato, "Debe registrarse o loguearse para poder jugar\n");
-                                    send(arrayClientes[0],dato,strlen(dato),0);
-                                }
-                                if(strcmp(primeraPalabra,"USUARIO\n")==0){
-                                    sscanf(dato, "%s %s", primeraPalabra, usuario);
-                                }else if(strcmp(primeraPalabra,"PASSWORD\n")==0){
-                                    sscanf(dato, "%s %s", primeraPalabra, password);
-                                }else if(strcmp(primeraPalabra, "REGISTRO\n")==0){
-                                    sscanf(dato, "%s %s %s %s %s", primeraPalabra, opcionUsuario, usuario, opcionPassword, password);
-                                    registered=false;
-                                    fich.open("BASEDEDATOS.txt");
-                                    while(!fich.eof()){
-                                        //fscanf(fich, "%s\t%s", usuarioAux, passwordAux);
-                                        if(strcmp(usuarioAux,usuario)==0 && strcmp(passwordAux,password)==0){
-                                            std::cout<<"Usuario ya registrado\n";
-                                            registered==true;
-                                            fich.close();
-                                        }
-                                    }   
-                                    if(registered==false){
-                                        fichAux.open("BASEDEDATOS.txt");
-                                        fichAux<<usuario<<"\t"<<password<<"\n";
-                                        fichAux.close();
-                                    }       
-                                }
-                            }else{
-                                std::cout<<"Error recibiendo datos del cliente\n";
-                            }              
+                            }                     
                         }else if (i == 0){
                             //Se ha introducido información de teclado
                             bzero(dato, sizeof(dato));
                             fgets(dato, sizeof(dato),stdin);
-                            
-                            //Controlar si se ha introducido "SALIR", cerrando todos los sockets y finalmente saliendo del servidor. (implementar)
-                            if(strcmp(dato,"SALIR\n") == 0){
-                             
-                                for (j = 0; j < numClientes; j++){
-                                    send(arrayClientes[j], "Desconexion servidor\n", strlen("Desconexion servidor\n"),0);
-                                    close(arrayClientes[j]);
-                                    FD_CLR(arrayClientes[j],&readfds);
-                                }
-                                    close(sd);
-                                    exit(-1);   
-                            }                            
+                        
                         }else{
-                            bzero(dato,sizeof(dato));
-                            
-                            recibidos = recv(i,dato,sizeof(dato),0);
-                            
-                            if(recibidos > 0){
-                                
-                                if(strcmp(dato,"SALIR\n") == 0){
-                                    
-                                    salirCliente(i,&readfds,&numClientes,arrayClientes);
-                                    
-                                }
-                                else{
-                                    
-                                    sprintf(identificador,"%d: %s",i,dato);
-                                    bzero(dato,sizeof(dato));
-                                    strcpy(dato,identificador);
-                                    
-                                    for(j=0; j<numClientes; j++)
-                                        if(arrayClientes[j] != i)
-                                            send(arrayClientes[j],dato,strlen(dato),0);
-
-                                    
-                                }
-                                                                
-                                
-                            }
-                            //Si el cliente introdujo ctrl+c
-                            if(recibidos== 0)
-                            {
+                           // for(j=0; j<(numClientes);j++){
+                                bzero(dato,sizeof(dato));
+                                recibidos = recv(i,dato,sizeof(dato),0);   
+                                //Controlar si se ha introducido "SALIR", cerrando todos los sockets y finalmente saliendo del servidor. (implementar)
+                                /* -----------------------------------------------------------------
+                                 Comprobamos si hemos recibido alguna informacion 
+                                -------------------------------------------------------------------*/
+                                if(recibidos > 0){
+                                    if((strcmp(dato,"INICIAR-PARTIDA")==0) && ((usuarioBool==true) && (passwordBool==true)) || (registerBool==true)){
+                                        bzero(dato,sizeof(dato));
+                                        strcpy(dato, "Puede Jugar\n");
+                                        send(clientes[i],dato,sizeof(dato),0);
+                                    }else{
+                                        bzero(dato,sizeof(dato));
+                                        printf("Debe registrarse el usuario %d\n", i);
+                                        strcpy(dato, "Debe registrarse o loguearse para poder jugar\n");
+                                        send(clientes[i],dato,sizeof(dato),0);
+                                    }
+                                    if(strncmp(dato,"USUARIO ",8)==0){
+                                        sscanf(dato, "%s %s", primeraPalabra, usuario);
+                                    }else if(strncmp(dato,"PASSWORD ", 9)==0){
+                                        sscanf(dato, "%s %s", primeraPalabra, password);
+                                    }else if(strncmp(dato, "REGISTRO ", 9)==0){
+                                        sscanf(dato, "%s %s %s %s %s", primeraPalabra, opcionUsuario, usuario, opcionPassword, password);
+                                        registered=false;
+                                        fich.open("BASEDEDATOS.txt");
+                                        while(!fich.eof()){
+                                            //fscanf(fich, "%s\t%s", usuarioAux, passwordAux);
+                                            if(strcmp(usuarioAux,usuario)==0 && strcmp(passwordAux,password)==0){
+                                                std::cout<<"Usuario ya registrado\n";
+                                                registered==true;
+                                                fich.close();
+                                            }
+                                        }   
+                                        if(registered==false){
+                                            fichAux.open("BASEDEDATOS.txt");
+                                            fichAux<<usuario<<"\t"<<password<<"\n";
+                                            fichAux.close();
+                                        }       
+                                    }else if(strcmp(dato,"SALIR\n") == 0){
+                                 
+                                        for (j = 0; j < numClientes; j++){
+                                            send(clientes[j], "Desconexion servidor\n", strlen("Desconexion servidor\n"),0);
+                                            close(clientes[j]);
+                                            FD_CLR(clientes[j],&readfds);
+                                        }
+                                            close(sd);
+                                            exit(-1);   
+                                    }
+                                }else if(recibidos==0){
                                 printf("El socket %d, ha introducido ctrl+c\n", i);
                                 //Eliminar ese socket
-                                salirCliente(i,&readfds,&numClientes,arrayClientes);
-                            }
-                        }
+                                salirCliente(i,&readfds,&numClientes,clientes);
+                                }else{
+                                    std::cout<<"Error recibiendo datos del cliente\n";
+                                }
+                            }                                        
+                        //}
                     }
                 }
             }
@@ -257,7 +227,7 @@ int main(){
 	return 0;
 }
 
-void salirCliente(int socket, fd_set * readfds, int * numClientes, int arrayClientes[]){
+void salirCliente(int socket, fd_set * readfds, int * numClientes, std::vector<int> clientes){
   
     char dato[250];
     int j;
@@ -267,10 +237,10 @@ void salirCliente(int socket, fd_set * readfds, int * numClientes, int arrayClie
     
     //Re-estructurar el array de clientes
     for (j = 0; j < (*numClientes) - 1; j++)
-        if (arrayClientes[j] == socket)
+        if (clientes[j] == socket)
             break;
     for (; j < (*numClientes) - 1; j++)
-        (arrayClientes[j] = arrayClientes[j+1]);
+        (clientes[j] = clientes[j+1]);
     
     (*numClientes)--;
     
@@ -278,8 +248,8 @@ void salirCliente(int socket, fd_set * readfds, int * numClientes, int arrayClie
     sprintf(dato,"Desconexión del cliente: %d\n",socket);
     
     for(j=0; j<(*numClientes); j++)
-        if(arrayClientes[j] != socket)
-            send(arrayClientes[j],dato,strlen(dato),0);
+        if(clientes[j] != socket)
+            send(clientes[j],dato,strlen(dato),0);
 
 
 }

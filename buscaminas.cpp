@@ -54,12 +54,70 @@ int Buscaminas::getX(char x){
 	}
 }
 
+bool Buscaminas::estaVisitada(char x , int y)
+{
+	
+	std::vector< std::vector<int > > aux;
+	int a=getX(x);
+	aux=getVisitadas();
+	
+
+	if(aux[y][a]==0)
+	{
+		
+		return false;
+	}
+	else
+	{
+		
+		return true;
+	}
+}
+
+bool Buscaminas::estaVisitada2(int x, int y)
+{
+	
+	std::vector< std::vector<int > > aux;
+	aux=getVisitadas();
+	
+
+	if(aux[x][y]==0)
+	{
+		
+		return false;
+	}
+	else
+	{
+		
+		return true;
+	}
+}
+
+
+
+void Buscaminas::ganar()
+{
+	if(getEncontradas()==10)
+	{
+		printf("Has ganado");
+		exit(0);
+	}
+}
+
+void Buscaminas::Encontrar()
+{
+	int aux;
+	aux=getEncontradas();
+	aux++;
+	setEncontradas(aux);
+}
+
 int Buscaminas::getNumero(int y){
-	if(y>0 && y<11)
+	if(y>=0 && y<10)
 		return 1;
 	else{
-		std::cout<<"Error, elija un número en el rango de 1 a 10\n\n";
-		return 0;
+		std::cout<<"Error, elija un número en el rango de 0 a 9\n\n";
+		return -1;
 	}
 }
 
@@ -76,7 +134,7 @@ void Buscaminas::coordenadas(char &x, int &y){
 		std::cout<<"\nIntroduzca un numero: ";
 		std::cin>>y;
 		comprobador=getNumero(y);
-	}while((std::isdigit(y))==0 && (comprobador==0));
+	}while((std::isdigit(y))==0 && (comprobador==-1));
 	std::cout<<"\nCoordenada: ("<<x<<", "<<y<<") \n";
 }
 
@@ -98,13 +156,11 @@ void Buscaminas::crearMatrizEscondida(){
 			for(j=0;j<10;j++){
 				if(contador!=getMinas()){
 					numero=(rand()%101);
-					std::cout<<"numero: "<<numero<<std::endl;
 					if(numero<30){
 						MatrizAux[i][j]=-1;
 						//std::cout<<MatrizAux[i][j]<<"\t";
 						contador++;
 					}
-				std::cout<<"contador: "<<contador<<std::endl;
 				}
 			}
 		}
@@ -147,27 +203,93 @@ void Buscaminas::crearMatrizEscondida(){
 }
 
 void Buscaminas::MatrizPinchar(char x, int y){
+	punto xd;
 	std::vector<std::vector<int > > MatrizAux1=getMatrizEscondida();
 	std::vector<std::vector<int > > MatrizAux2=getMatrizMostrar();
 	int a=getX(x);
-	MatrizAux2[a][y]=MatrizAux1[a][y];
+	MatrizAux2[y][a]=MatrizAux1[y][a];
 	setMatrizMostrar(MatrizAux2);
+
+	visitar(y , a);
+
+	if (MatrizAux2[y][a]==-1)
+	{
+		printf("Has explotado una mina, has perdido" );
+		exit(0); //supongo que habra que salirse con el cliente o algo, esto es provicional
+		//llamar a funcion que le diga al cliente que se vaya o yo que se xd
+	}
+
+	if (MatrizAux2[y][a]==0)
+	{
+		//xd=abrirZeros(y, a , xd);
+	}
+}
+
+punto Buscaminas::abrirZeros(int m , int n , punto aux)
+{
+
+	std::vector<std::vector<int > > MatrizAux2=getMatrizEscondida();
+	std::vector<std::vector<int > > MatrizAux;
+	int a ,b ;
+	punto p;
+	for(p.x=-1;p.x<2;p.x++){
+		printf("x %d\n",p.x );
+					for(p.y=-1;p.y<2;p.y++){
+						printf("y %d\n",p.y );
+						a=m-p.x;
+						b=n-p.y;
+						printf("hey %d %d %d %d\n" , a , b , m , n);
+						if((a >= 0 && b >= 0)  && (a < 10 && b < 10)){
+							MatrizAux=getMatrizMostrar();
+							MatrizAux[a][b]=MatrizAux2[a][b];
+							setMatrizMostrar(MatrizAux);
+							printf("%d\n", MatrizAux[a][b] );
+							if (MatrizAux[a][b]==0)
+							 
+							{
+								
+								if ( estaVisitada2(a,b)==false )
+								{
+									//printf("a:%d b:%d m:%d n:%d \n", a , b , m ,n);
+								
+								p=abrirZeros(a , b , p);
+								//printf("holi\n");
+								}
+							}
+						}
+						visitar(a,b);
+					}
+				}
+
+	return aux;
+		
 }
 
 void Buscaminas::MatrizBandera(char x, int y, char jugador){
 	std::vector<std::vector<int > > MatrizAux ;
+	std::vector<std::vector<int > > MatrizAux2 ;
 	MatrizAux=getMatrizMostrar();
+	MatrizAux2=getMatrizEscondida();
 	int a=getX(x);
 
 	if (jugador=='A'){
-		MatrizAux[a][y]=-3;
+		MatrizAux[y][a]=-3;
 	}else if (jugador=='B'){
-		MatrizAux[a][y]=-4;
+		MatrizAux[y][a]=-4;
 	}
 	else{
-		MatrizAux[a][y]=-5;
+		MatrizAux[y][a]=-5;
 	}
 	setMatrizMostrar(MatrizAux);
+
+	//se van contando las banderas que acierta
+	if(MatrizAux2[y][a]==-1)
+	{
+		Encontrar();
+		ganar();
+	}
+
+	visitar(y,a);
 }
 
 
@@ -225,6 +347,12 @@ void Buscaminas::buscaminasGame(){
 
 	while(aux==0){
 		coordenadas(x,y);
+
+		if(estaVisitada(x,y)==true)
+		{
+			printf("casilla ya visitada\n");
+		}
+		else{
 		std::cout<<"Pulse 1 para descubrir pulse 2 para poner una bandera\n";
 		std::cin>>opcion;
 		switch(opcion){
@@ -241,6 +369,7 @@ void Buscaminas::buscaminasGame(){
 			default: 
 				std::cout<<"Opción errónea, eliga entre 1 o 2\n";
 				break;
+			}	
 		}
 	}
 }

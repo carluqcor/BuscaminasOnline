@@ -111,6 +111,19 @@ depend:
 .PHONY : depend
 
 #=============================================================================
+# Target rules for targets named ServidorB
+
+# Build rule for target.
+ServidorB: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 ServidorB
+.PHONY : ServidorB
+
+# fast build rule for target.
+ServidorB/fast:
+	$(MAKE) -f CMakeFiles/ServidorB.dir/build.make CMakeFiles/ServidorB.dir/build
+.PHONY : ServidorB/fast
+
+#=============================================================================
 # Target rules for targets named buscaminasOnline
 
 # Build rule for target.
@@ -122,6 +135,73 @@ buscaminasOnline: cmake_check_build_system
 buscaminasOnline/fast:
 	$(MAKE) -f CMakeFiles/buscaminasOnline.dir/build.make CMakeFiles/buscaminasOnline.dir/build
 .PHONY : buscaminasOnline/fast
+
+#=============================================================================
+# Target rules for targets named ClienteB
+
+# Build rule for target.
+ClienteB: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 ClienteB
+.PHONY : ClienteB
+
+# fast build rule for target.
+ClienteB/fast:
+	$(MAKE) -f CMakeFiles/ClienteB.dir/build.make CMakeFiles/ClienteB.dir/build
+.PHONY : ClienteB/fast
+
+ClienteBuscaminas.o: ClienteBuscaminas.cpp.o
+
+.PHONY : ClienteBuscaminas.o
+
+# target to build an object file
+ClienteBuscaminas.cpp.o:
+	$(MAKE) -f CMakeFiles/ClienteB.dir/build.make CMakeFiles/ClienteB.dir/ClienteBuscaminas.cpp.o
+.PHONY : ClienteBuscaminas.cpp.o
+
+ClienteBuscaminas.i: ClienteBuscaminas.cpp.i
+
+.PHONY : ClienteBuscaminas.i
+
+# target to preprocess a source file
+ClienteBuscaminas.cpp.i:
+	$(MAKE) -f CMakeFiles/ClienteB.dir/build.make CMakeFiles/ClienteB.dir/ClienteBuscaminas.cpp.i
+.PHONY : ClienteBuscaminas.cpp.i
+
+ClienteBuscaminas.s: ClienteBuscaminas.cpp.s
+
+.PHONY : ClienteBuscaminas.s
+
+# target to generate assembly for a file
+ClienteBuscaminas.cpp.s:
+	$(MAKE) -f CMakeFiles/ClienteB.dir/build.make CMakeFiles/ClienteB.dir/ClienteBuscaminas.cpp.s
+.PHONY : ClienteBuscaminas.cpp.s
+
+ServidorBuscaminas.o: ServidorBuscaminas.cpp.o
+
+.PHONY : ServidorBuscaminas.o
+
+# target to build an object file
+ServidorBuscaminas.cpp.o:
+	$(MAKE) -f CMakeFiles/ServidorB.dir/build.make CMakeFiles/ServidorB.dir/ServidorBuscaminas.cpp.o
+.PHONY : ServidorBuscaminas.cpp.o
+
+ServidorBuscaminas.i: ServidorBuscaminas.cpp.i
+
+.PHONY : ServidorBuscaminas.i
+
+# target to preprocess a source file
+ServidorBuscaminas.cpp.i:
+	$(MAKE) -f CMakeFiles/ServidorB.dir/build.make CMakeFiles/ServidorB.dir/ServidorBuscaminas.cpp.i
+.PHONY : ServidorBuscaminas.cpp.i
+
+ServidorBuscaminas.s: ServidorBuscaminas.cpp.s
+
+.PHONY : ServidorBuscaminas.s
+
+# target to generate assembly for a file
+ServidorBuscaminas.cpp.s:
+	$(MAKE) -f CMakeFiles/ServidorB.dir/build.make CMakeFiles/ServidorB.dir/ServidorBuscaminas.cpp.s
+.PHONY : ServidorBuscaminas.cpp.s
 
 buscaminas.o: buscaminas.cpp.o
 
@@ -184,8 +264,16 @@ help:
 	@echo "... clean"
 	@echo "... depend"
 	@echo "... rebuild_cache"
-	@echo "... buscaminasOnline"
 	@echo "... edit_cache"
+	@echo "... ServidorB"
+	@echo "... buscaminasOnline"
+	@echo "... ClienteB"
+	@echo "... ClienteBuscaminas.o"
+	@echo "... ClienteBuscaminas.i"
+	@echo "... ClienteBuscaminas.s"
+	@echo "... ServidorBuscaminas.o"
+	@echo "... ServidorBuscaminas.i"
+	@echo "... ServidorBuscaminas.s"
 	@echo "... buscaminas.o"
 	@echo "... buscaminas.i"
 	@echo "... buscaminas.s"

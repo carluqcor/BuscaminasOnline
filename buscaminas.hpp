@@ -4,14 +4,22 @@
 #include <vector>
 #include <string>
 
+struct punto
+{
+	int x;
+	int y;
+};
+
 class Buscaminas{
  
 	//c_str en la conversion de las cadenas al hacer el send en los sockets, ya que hay problemas con string
 
 	private:
 		int bombas_;
+		int encontradas_;
 		std::vector< std::vector<int > > MatrizEscondida;
 		std::vector< std::vector<int > > MatrizMostrar;
+		std::vector< std::vector<int > > Visitadas;
 		//std::vector<std::vector<std::string> > MatrizEscondida = std::vector< std::vector<std::string> >(10, std::vector<std::string>(10));
 		//std::vector<std::vector<std::string> > MatrizMostrar = std::vector< std::vector<std::string> >(10, std::vector<std::string>(10));
 		//std::string A_="A";
@@ -22,6 +30,8 @@ class Buscaminas{
 		//constructor
 		Buscaminas(){
 			bombas_=20;
+			encontradas_=0;
+
 			MatrizEscondida.resize(10);
 				for (int a = 0; a < 10; a++){
 					MatrizEscondida[a].resize(10,0);
@@ -30,20 +40,33 @@ class Buscaminas{
 				for (int a = 0; a < 10; a++){
 					MatrizMostrar[a].resize(10,-2);
 				}
+
+			Visitadas.resize(10);
+				for (int a = 0; a < 10; a++){
+					Visitadas[a].resize(10,0);
+				}
 		}
 		//Funciones GET
 		inline std::vector<std::vector<int> > getMatrizEscondida(){return MatrizEscondida;}
 		inline std::vector<std::vector<int> > getMatrizMostrar(){return MatrizMostrar;}
+		inline std::vector<std::vector<int> > getVisitadas(){return Visitadas;}
 		//FUNCIONES GET DE A B AB, NO SE MODIFICAN
 		int getX(char x);
 		int getNumero(int y);
 		int getMinas(){return bombas_;}
+		int getEncontradas(){return encontradas_;}
 
 
 		//Funciones SET
 		inline void setBombas(int bombas){bombas_=bombas;}
 		inline void setMatrizEscondida(std::vector<std::vector<int> > MatrizEscondidaAux){MatrizEscondida=MatrizEscondidaAux;}
 		inline void setMatrizMostrar(std::vector<std::vector<int> > MatrizMostrarAux){MatrizMostrar=MatrizMostrarAux;}
+		inline void setEncontradas(int encontradas){encontradas_=encontradas;}
+
+		inline void visitar(int x, int y){Visitadas[x][y]=1;}
+		bool estaVisitada(char x, int y);
+		bool estaVisitada2(int x , int y );
+
 		void MatrizPinchar(char x, int y); //Cambia la matriz a mostrar
 		void MatrizBandera(char x, int y , char jugador);
 		void crearMatrizEscondida();
@@ -51,5 +74,8 @@ class Buscaminas{
 		void mostrarMatrizMostrar();
 		void coordenadas(char &x, int &y);
 		void buscaminasGame();
+		void Encontrar();
+		void ganar();
+		punto abrirZeros(int m , int n , punto aux);
 };
 #endif

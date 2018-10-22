@@ -19,7 +19,7 @@ int main(){
 	-----------------------------------------------------*/
 	int sd;
 	struct sockaddr_in sockname;
-	char buffer[250];
+	char buffer[250], cadena[250];
 	socklen_t len_sockname;
     fd_set readfds, auxfds;
     int salida;
@@ -91,12 +91,17 @@ int main(){
                 bzero(buffer,sizeof(buffer));
                 
                 printf("Que desea pedir? (INICIAR-PARTIDA, TIME , DAYTIME)\n"); //BLA BLA BLA
-                fgets(buffer,sizeof(buffer),stdin);
-                
-                if(strcmp(buffer,"SALIR\n") == 0){ //Se deberia enviar al servidor tambien
+				fgets(buffer, sizeof(buffer), stdin);
+                //size_t tam=strlen(buffer)-1; //\0
+                //if(buffer[tam]=='\n'){
+                	buffer[strlen(buffer)-1]='\0';
+               // 	printf("1%s%c-%d\n", buffer, buffer[tam], strlen(buffer));
+                //}
+                printf("%s-%d\n", buffer, strlen(buffer));
+                if(strcmp(buffer,"SALIR") == 0){ //Se deberia enviar al servidor tambien
                         fin = 1;
                 }                
-                send(sd,buffer,sizeof(buffer),0);   
+                send(sd,buffer,sizeof(buffer),0);  
             } 
         }			
     }while(fin == 0);
