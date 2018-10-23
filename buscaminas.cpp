@@ -214,7 +214,7 @@ void Buscaminas::MatrizPinchar(char x, int y){
 
 	if (MatrizAux2[y][a]==-1)
 	{
-		printf("Has explotado una mina, has perdido" );
+		printf("Has explotado una mina, has perdido\n" );
 		exit(0); //supongo que habra que salirse con el cliente o algo, esto es provicional
 		//llamar a funcion que le diga al cliente que se vaya o yo que se xd
 	}
