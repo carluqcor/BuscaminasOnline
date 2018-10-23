@@ -221,7 +221,7 @@ void Buscaminas::MatrizPinchar(char x, int y){
 
 	if (MatrizAux2[y][a]==0)
 	{
-		//xd=abrirZeros(y, a , xd);
+		xd=abrirZeros(y, a , xd);
 	}
 }
 
@@ -233,36 +233,31 @@ punto Buscaminas::abrirZeros(int m , int n , punto aux)
 	int a ,b ;
 	punto p;
 	for(p.x=-1;p.x<2;p.x++){
-		printf("x %d\n",p.x );
-					for(p.y=-1;p.y<2;p.y++){
-						printf("y %d\n",p.y );
-						a=m-p.x;
-						b=n-p.y;
-						printf("hey %d %d %d %d\n" , a , b , m , n);
-						if((a >= 0 && b >= 0)  && (a < 10 && b < 10)){
-							MatrizAux=getMatrizMostrar();
-							MatrizAux[a][b]=MatrizAux2[a][b];
-							setMatrizMostrar(MatrizAux);
-							printf("%d\n", MatrizAux[a][b] );
-							if (MatrizAux[a][b]==0)
-							 
-							{
-								
-								if ( estaVisitada2(a,b)==false )
-								{
-									//printf("a:%d b:%d m:%d n:%d \n", a , b , m ,n);
-								
-								p=abrirZeros(a , b , p);
-								//printf("holi\n");
-								}
-							}
-						}
+			for(p.y=-1;p.y<2;p.y++){
+				a=m-p.x;
+				b=n-p.y;
+				if((a >= 0 && b >= 0)  && (a < 10 && b < 10)){
+					MatrizAux=getMatrizMostrar();
+					MatrizAux[a][b]=MatrizAux2[a][b];
+					setMatrizMostrar(MatrizAux);
+					if (MatrizAux[a][b]==0)
+					 
+					{
+						
+						if ( estaVisitada2(a,b)==false )
+						{
+							//printf("a:%d b:%d m:%d n:%d \n", a , b , m ,n);
 						visitar(a,b);
+						p=abrirZeros(a , b , p);
+						//printf("holi\n");
+						}else{
+							visitar(a,b);
+						}
 					}
 				}
-
+			}
+		}
 	return aux;
-		
 }
 
 void Buscaminas::MatrizBandera(char x, int y, char jugador){
