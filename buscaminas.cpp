@@ -211,6 +211,7 @@ void Buscaminas::MatrizPinchar(char x, int y){
 	setMatrizMostrar(MatrizAux2);
 
 	visitar(y , a);
+	//printf("%d  %d\n",MatrizAux2[y][a] ,  MatrizAux1[y][a]);
 
 	if (MatrizAux2[y][a]==-1)
 	{
@@ -250,9 +251,11 @@ punto Buscaminas::abrirZeros(int m , int n , punto aux)
 						visitar(a,b);
 						p=abrirZeros(a , b , p);
 						//printf("holi\n");
-						}else{
-							visitar(a,b);
 						}
+					}
+					else
+					{
+						visitar(a,b);
 					}
 				}
 			}
@@ -303,8 +306,17 @@ void Buscaminas::mostrarMatrizEscondida(){
 
 void Buscaminas::mostrarMatrizMostrar(){
 	int i, j;
+	char letras[11] ="ABCDEFGHIJ";
+	std::cout<<"|"<<" "<<"|\t";
+	for (int l = 0; l < 10; ++l)
+	{
+		std::cout<<"|"<<letras[l]<<"|\t";
+	}
+	std::cout<<std::endl;
+
 	std::vector<std::vector<int> > MatrizAux = getMatrizMostrar();
 	for(i = 0; i < (int) MatrizAux.size(); i++){
+		std::cout<<"|"<<i<<"|\t";
 		for(j=0;j<(int) MatrizAux.size(); j++){
 			if (MatrizAux[i][j]==-2){
 				std::cout<<"|"<<"-"<<"|\t";
