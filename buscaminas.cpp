@@ -380,3 +380,87 @@ void Buscaminas::buscaminasGame(){
 		}
 	}
 }
+
+
+void Buscaminas::buscaminasJuego(char jugador)
+{
+	int aux=0, a, y, opcion;
+	char s, x;
+
+	
+	mostrarMatrizMostrar();
+
+	while(aux==0){
+		coordenadas(x,y);
+
+		if(estaVisitada(x,y)==true)
+		{
+			printf("casilla ya visitada\n");
+		}
+		else{
+		std::cout<<"Pulse 1 para descubrir pulse 2 para poner una bandera\n";
+		std::cin>>opcion;
+		switch(opcion){
+			case 1:
+				MatrizPinchar(x, y);
+				mostrarMatrizMostrar();
+				aux==1;
+				break;
+
+			case 2:
+				MatrizBandera(x, y, jugador);
+				mostrarMatrizMostrar();
+				aux==1;
+				break;
+
+			default: 
+				std::cout<<"Opción errónea, eliga entre 1 o 2\n";
+				break;
+			}	
+		}
+	}
+}
+
+
+void Buscaminas::buscaminasCharEscondida(char aux[101])
+{
+	std::vector<std::vector<int> > MatrizAux = getMatrizEscondida();
+	int a=0;
+	for (int i = 0; i < 10; ++i)
+	{
+		for (int j = 0; j < 10; ++j)
+		{
+			MatrizAux[i][j]=aux[a];
+			a++;
+		}
+	}
+}
+
+
+void Buscaminas::buscaminasCharMostrar(char aux[101])
+{
+	std::vector<std::vector<int> > MatrizAux = getMatrizMostrar();
+	int a=0;
+	for (int i = 0; i < 10; ++i)
+	{
+		for (int j = 0; j < 10; ++j)
+		{
+			MatrizAux[i][j]=aux[a];
+			a++;
+		}
+	}
+}
+
+void Buscaminas::buscaminasCharVisitadas(char aux[101])
+{
+	std::vector<std::vector<int> > MatrizAux = getVisitadas();
+	int a=0;
+	for (int i = 0; i < 10; ++i)
+	{
+		for (int j = 0; j < 10; ++j)
+		{
+			MatrizAux[i][j]=aux[a];
+			a++;
+		}
+	}
+}

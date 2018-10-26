@@ -61,6 +61,7 @@ class Buscaminas{
 		inline void setBombas(int bombas){bombas_=bombas;}
 		inline void setMatrizEscondida(std::vector<std::vector<int> > MatrizEscondidaAux){MatrizEscondida=MatrizEscondidaAux;}
 		inline void setMatrizMostrar(std::vector<std::vector<int> > MatrizMostrarAux){MatrizMostrar=MatrizMostrarAux;}
+		inline void setVisitadas(std::vector<std::vector<int> > MatrizAux){Visitadas=MatrizAux;}
 		inline void setEncontradas(int encontradas){encontradas_=encontradas;}
 
 		inline void visitar(int x, int y){Visitadas[x][y]=1;}
@@ -77,5 +78,12 @@ class Buscaminas{
 		void Encontrar();
 		void ganar();
 		punto abrirZeros(int m , int n , punto aux);
+
+
+		void buscaminasJuego(char jugador);
+
+		void buscaminasCharEscondida(char aux[101]);
+		void buscaminasCharMostrar(char aux[101]);
+		void buscaminasCharVisitadas(char aux[101]);
 };
 #endif

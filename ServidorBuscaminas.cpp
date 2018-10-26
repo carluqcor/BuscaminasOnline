@@ -14,10 +14,20 @@
 #include <fstream>
 #include <sstream>
 #include "macros.hpp"
-
+#include "buscaminas.hpp"
 
 #define MSG_SIZE 250
 #define MAX_CLIENTS 50
+
+struct clients{
+        char user[25];
+        char password[25];
+        int socket;
+        int estado;
+        int login=0;
+        char color; // JUgador A o B
+        int partida;
+};
 
 
 //SERVIDOR CHAT BUSCAMINAS
@@ -27,8 +37,9 @@
  */
 
 void manejador(int signum);
-//void salirCliente(int socket, fd_set * readfds, int * numClientes, struct clients *cliente);
+void salirCliente(int socket, fd_set *readfds, int &numClientes, struct clients *cliente);
 bool registrado(char *nombre, char *password);
+void jugar(clients a, clients b);
 
 int main(){
   
@@ -37,13 +48,6 @@ int main(){
 	-----------------------------------------------------*/
 	int sd, new_sd;
 	struct sockaddr_in sockname, from;
-    struct clients{
-        char user[25];
-        char password[25];
-        int socket;
-        int estado;
-        int login=0;
-    };
     double size;
 	char dato[MSG_SIZE];
 	socklen_t from_len;
@@ -60,13 +64,16 @@ int main(){
 
     FILE *fich;
     FILE *fichAux;
-    clients clientes[11];
+    clients clientes[20];
     //contadores
     int i,j,k;
 	int recibidos;
     char identificador[MSG_SIZE];
     
     int on, ret;
+
+
+
 
 	/* --------------------------------------------------
 		Se abre el socket 
@@ -184,83 +191,114 @@ int main(){
                                     std::cout<<"Dato: "<<dato<<std::endl;
                                     std::cout<<"Nombre: "<<clientes[numClientes].user<<" Pass: "<<clientes[numClientes].password<<std::endl;
                                     if(recibidos > 0){
-                                        if(strcmp(dato, "\n")){
-                                            std::cout<<"Se ha recibido un INTRO\n";
-                                        }else{
-                                            if((strncmp(dato,"INICIAR-PARTIDA", 15)==0) && (registrado(clientes[numClientes].user, clientes[numClientes].password)==true) && (clientes[numClientes].login==1)){
-                                                bzero(dato,sizeof(dato));
-                                                strcpy(dato, "Puede Jugar\n");
-                                                send(clientes[numClientes].socket,dato,sizeof(dato),0);
+                                        if((strncmp(dato,"INICIAR-PARTIDA", 15)==0) && (registrado(clientes[numClientes].user, clientes[numClientes].password)==true) && (clientes[numClientes].login==1)){
+                                            bzero(dato,sizeof(dato));
+                                            strcpy(dato, "Puede Jugar\n");
+                                            send(clientes[numClientes].socket,dato,sizeof(dato),0);
 
-                                            }else if((strncmp(dato,"INICIAR-PARTIDA", 15)==0) && (registrado(clientes[numClientes].user, clientes[numClientes].password))==false){
-                                                bzero(dato,sizeof(dato));
+                                        }else if((strncmp(dato,"INICIAR-PARTIDA", 15)==0) && (registrado(clientes[numClientes].user, clientes[numClientes].password))==false){
+                                            bzero(dato,sizeof(dato));
+                                            printf("Debe registrarse el usuario %d\n", i);
+                                            strcpy(dato, "Debe registrarse o loguearse para poder jugar\n");
+                                            send(clientes[numClientes].socket,dato,sizeof(dato),0);
+                                        
+                                        }else if((strncmp(dato,"INICIAR-PARTIDA", 15)==0) && (registrado(clientes[numClientes].user, clientes[numClientes].password))==true && clientes[numClientes].login==0){
+                                                std::cout<<"El usuario "<<clientes[numClientes].user<<" no se ha logueado aún\n";
+                                        }
 
-                                                printf("Debe registrarse el usuario %d\n", i);
-                                                strcpy(dato, "Debe registrarse o loguearse para poder jugar\n");
-                                                send(clientes[numClientes].socket,dato,sizeof(dato),0);
+                                        if(strncmp(dato,"USUARIO ",8)==0){
+                                            iss.str(dato);
+                                            for(int k=0;k<2;k++){
+                                                iss>>value;
+                                                if(k==0 && value!="USUARIO"){
+                                                    strcpy(dato, "Error, comando de USUARIO no reconocido\n");
+                                                }
+
+                                                if(k==1){
+                                                    strcpy(clientes[numClientes].user,(value.c_str())); 
+                                                }
                                             }
-                         
-                                            if(strncmp(dato,"USUARIO ",8)==0){
-                                                sscanf(dato, "%s %s", primeraPalabra, usuarioAux);
-                                                strcpy(clientes[numClientes].user,(usuarioAux1.c_str()));
-                                            }else if(strncmp(dato,"PASSWORD ", 9)==0){
-                                                sscanf(dato, "%s %s", primeraPalabra, passwordAux);
-                                                strcpy(clientes[numClientes].password,(passwordAux1.c_str()));
-                                                if(registrado(clientes[numClientes].user, clientes[numClientes].password)){
-                                                    clientes[numClientes].login=1;
-                                                }
-                                            }else if(strncmp(dato, "REGISTRO ", 9)==0){
-                                                //sscanf(dato, "%s %s %s %s %s", primeraPalabra, usuario, clientes[numClientes].user, pass, clientes[numClientes].password);
-                                                
-                                                iss.str(dato);
-                                                for(int k=0;k<5;k++){
-                                                    iss>>value;
-                                                    if(k==2)
-                                                        strcpy(clientes[numClientes].user,(value.c_str()));
-                                                    if(k==4)
-                                                        strcpy(clientes[numClientes].password,(value.c_str()));
+                                        }else if(strncmp(dato,"PASSWORD ", 9)==0){
+                                            iss.str(dato);
+                                            for(int k=0;k<2;k++){
+                                                iss>>value;
+                                                if(k==0 && value!="PASSWORD"){
+                                                    strcpy(dato, "Error, comando de PASSWORD no reconocido\n");
                                                 }
 
-                                                if((registrado(clientes[numClientes].user, clientes[numClientes].password))==true && clientes[numClientes].login==0){
-                                                    std::cout<<"El usuario "<<clientes[numClientes].user<<" no se ha logueado aún\n";
+                                                if(k==1){
+                                                    strcpy(clientes[numClientes].password,(value.c_str())); 
                                                 }
-
-                                                registered=false;
+                                            }
+                                            if(registrado(clientes[numClientes].user, clientes[numClientes].password)){
+                                                clientes[numClientes].login=1;
+                                            }
+                                        }else if(strncmp(dato, "REGISTRO ", 9)==0){
+                                            //sscanf(dato, "%s %s %s %s %s", primeraPalabra, usuario, clientes[numClientes].user, pass, clientes[numClientes].password);
+                                            std::cout<<"Hola\n";
+                                            iss.str(dato);
+                                            for(int k=0;k<5;k++){
+                                                iss>>value;
+                                                if(k==2)
+                                                    strcpy(clientes[numClientes].user,(value.c_str()));
+                                                if(k==4)
+                                                    strcpy(clientes[numClientes].password,(value.c_str()));
+                                            }
+                                            std::cout<<"Nombre: "<<clientes[numClientes].user<<" Pass: "<<clientes[numClientes].password<<std::endl;
+                                            registered=false;
+                                            fich=fopen("BASEDEDATOS.txt", "r");
+                                            if(fich==NULL){
+                                                std::cout<<"Creando fichero de texto...\n";
+                                                fich=fopen("BASEDEDATOS.txt", "w");
+                                                fclose(fich);
                                                 fich=fopen("BASEDEDATOS.txt", "r");
-                                                fseek(fich, 0, SEEK_END);
-                                                size=ftell(fich);
-                                                fseek(fich, 0, SEEK_SET);
-                                                if(size>0){
-                                                    while(!feof(fich)){
-                                                        fscanf(fich, "%s\t%s", usuarioAux, passwordAux);
-                                                        if(strcmp(usuarioAux, clientes[numClientes].user)==0 && strcmp(passwordAux, clientes[numClientes].password)==0){
-                                                            std::cout<<"Usuario ya registrado\n";
-                                                            registered==true;
-                                                            fclose(fich);
-                                                        }
-                                                    }   
-                                                }else{
-                                                    if(registered==false){
-                                                        fichAux=fopen("BASEDEDATOS.txt", "w+a");
-                                                        fprintf(fichAux,"%s\t%s",clientes[numClientes].user,clientes[numClientes].password);
-                                                        fclose(fichAux);
-                                                    }   
-                                                }    
-                                            }else if(strcmp(dato,"SALIR\n") == 0){
-                                         
-                                                for (j = 0; j < numClientes; j++){
-                                                    send(clientes[numClientes].socket, "Desconexion servidor\n", strlen("Desconexion servidor\n"),0);
-                                                    close(clientes[numClientes].socket);
-                                                    FD_CLR(clientes[numClientes].socket,&readfds);
-                                                }
-                                                    close(sd);
-                                                    exit(-1);   
                                             }
+                                            fseek(fich, 0, SEEK_END);
+                                            size=ftell(fich);
+                                            fseek(fich, 0, SEEK_SET);
+                                            if(size>0){
+                                                while(!feof(fich)){
+                                                    fscanf(fich, "%s\t%s", usuarioAux, passwordAux);
+                                                    if(strcmp(usuarioAux, clientes[numClientes].user)==0 && strcmp(passwordAux, clientes[numClientes].password)==0){
+                                                        bzero(dato,sizeof(dato));
+                                                        strcpy(dato, "Usuario ya existente en la base de datos, por favor inicie sesión\n");
+                                                        send(clientes[numClientes].socket,dato,sizeof(dato),0);
+                                                        registered==true;
+                                                        fclose(fich);
+                                                    }
+                                                }   
+                                                if(registered==false){
+                                                    fichAux=fopen("BASEDEDATOS.txt", "w+a");
+                                                    fprintf(fichAux,"%s\t%s",clientes[numClientes].user,clientes[numClientes].password);
+                                                    bzero(dato,sizeof(dato));
+                                                    strcpy(dato, "Se ha registrado correctamente, proceda a loguearse si desea jugar, por favor\n");
+                                                    send(clientes[numClientes].socket,dato,sizeof(dato),0);
+                                                    fclose(fichAux);
+                                                }   
+                                            }else{
+                                                if(registered==false){
+                                                    fichAux=fopen("BASEDEDATOS.txt", "w+a");
+                                                    fprintf(fichAux,"%s\t%s",clientes[numClientes].user,clientes[numClientes].password);
+                                                    bzero(dato,sizeof(dato));
+                                                    strcpy(dato, "Se ha registrado correctamente, proceda a loguearse si desea jugar, por favor\n");
+                                                    send(clientes[numClientes].socket,dato,sizeof(dato),0);
+                                                    fclose(fichAux);
+                                                }   
+                                            }    
+                                        }else if(strcmp(dato,"SALIR\n") == 0){
+                                     
+                                            for (j = 0; j < numClientes; j++){
+                                                send(clientes[numClientes].socket, "Desconexion servidor\n", strlen("Desconexion servidor\n"),0);
+                                                close(clientes[numClientes].socket);
+                                                exit(-1);   
+                                                FD_CLR(clientes[numClientes].socket,&readfds);
+                                            }
+                                                close(sd);
                                         }
                                     }else if(recibidos==0){
                                     printf("El socket %d, ha introducido ctrl+c\n", i);
                                     //Eliminar ese socket
-                                    //salirCliente(i,&readfds,&numClientes,clientes);
+                                    salirCliente(i, &readfds,numClientes,clientes);
                                     }else{
                                         std::cout<<"Error recibiendo datos del cliente\n";
                                     }
@@ -274,9 +312,8 @@ int main(){
 	close(sd);
 	return 0;
 }
-/*
-void salirCliente(int socket, fd_set * readfds, int * numClientes, struct clients *clientes){
-  
+
+void salirCliente(int socket, fd_set *readfds, int &numClientes, struct clients *clientes){
     char dato[250];
     int j;
     
@@ -284,23 +321,23 @@ void salirCliente(int socket, fd_set * readfds, int * numClientes, struct client
     FD_CLR(socket,readfds);
     
     //Re-estructurar el array de clientes
-    for (j = 0; j < (*numClientes) - 1; j++)
+    for (j = 0; j < (numClientes) - 1; j++)
         if (clientes[j].socket == socket)
             break;
-    for (; j < (*numClientes) - 1; j++)
+    for (; j < (numClientes) - 1; j++)
         (clientes[j].socket = clientes[j+1].socket);
     
-    (*numClientes)--;
+    (numClientes)--;
     
     bzero(dato,sizeof(dato));
     sprintf(dato,"Desconexión del cliente: %d\n", socket);
     
-    for(j=0; j<(*numClientes); j++)
+    for(j=0; j<(numClientes); j++)
         if(clientes[j].socket != socket)
             send(clientes[j].socket,dato,strlen(dato),0);
 
 
-}*/
+}
 
 void manejador (int signum){
     printf("\nSe ha recibido la señal sigint\n");
@@ -330,4 +367,64 @@ bool registrado(char *nombre, char *password){
         fclose(fichero);
         return false;   
     }
+}
+
+
+void jugar(clients a, clients b){
+    //Buscaminas juego;
+    int recibido=-1;
+    int aux=0;
+    char dato[MSG_SIZE];
+
+
+    //juego.crearMatrizEscondida();
+    strcpy(dato, "Empieza el juego, eres el jugador A");
+    send( a.socket,dato,sizeof(dato),0);
+    bzero(dato,sizeof(dato));
+    strcpy(dato, "Empieza el juego, eres el jugador B");
+    send( b.socket,dato,sizeof(dato),0);
+    bzero(dato,sizeof(dato));
+        
+
+    while(aux==0)
+    {
+        strcpy(dato, "Turno de  A");
+        send( a.socket,dato,sizeof(dato),0);
+        bzero(dato,sizeof(dato));
+        strcpy(dato, "Turno de  A");
+        send( b.socket,dato,sizeof(dato),0);
+        bzero(dato,sizeof(dato));
+        //bloquear b
+        //mandar string a A con todas las matrices
+        //el cliente hace un segundo contructor con 3 parametros como las 3 matrices
+        // en el cliente se ejecuta buscaminas juego.
+        //el cliente A despues de ejecutar buscaminas juego envia las cadenas con las matrices modificadas en el siguiente recv
+        while(recibido==-1)
+        {
+        recibido = recv(a.socket,dato,sizeof(dato),0);
+        }
+
+        ///se modifican las nuevas matrices aqui.
+        bzero(dato,sizeof(dato));
+        recibido=-1;
+
+
+        strcpy(dato, "Turno de  B");
+        send( a.socket,dato,sizeof(dato),0);
+        bzero(dato,sizeof(dato));
+        strcpy(dato, "Turno de  B");
+        send( b.socket,dato,sizeof(dato),0);
+        bzero(dato,sizeof(dato));
+        //bloquear a
+        //mandar string a B con la matriz, en el cliente se ejecuta buscaminas juego.
+        //el cliente a despues de ejecutar buscaminas juego envia una cadena con la matriz modificada en el siguiente recv
+        while(recibido==-1)
+        {
+        recibido = recv(a.socket,dato,sizeof(dato),0);
+        }
+        bzero(dato,sizeof(dato));
+        recibido=-1;
+
+    }
+
 }
