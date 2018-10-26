@@ -13,6 +13,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include "macros.hpp"
 
 
 #define MSG_SIZE 250
@@ -29,6 +30,8 @@ void manejador(int signum);
 //void salirCliente(int socket, fd_set * readfds, int * numClientes, struct clients *cliente);
 bool registrado(char *nombre, char *password);
 
+bool encontrarJugador(char *nombre, char *password);
+
 int main(){
   
 	/*---------------------------------------------------- 
@@ -41,6 +44,7 @@ int main(){
         char password[25];
         int socket;
         int estado;
+        int login=0;
     };
     double size;
 	char dato[MSG_SIZE];
@@ -51,9 +55,10 @@ int main(){
     std::string value;
     //int clientes[MAX_CLIENTS];
     int numClientes = 0;
-    bool registered=false, usuarioBool=false, passwordBool=false, registerBool=false;
+    bool registerBool=false;
     char *f;
     char *primeraPalabra, *usuario, *pass, *usuarioAux, *passwordAux;
+    std::string usuarioAux1, passwordAux1;
 
     FILE *fich;
     FILE *fichAux;
@@ -121,14 +126,15 @@ int main(){
 	/*-----------------------------------------------------------------------
 		El servidor acepta una petición
 	------------------------------------------------------------------------ */
-		while(1){
+		std::cout << CLEAR_SCREEN;
+        PLACE(1,0);
+        while(1){
             
             //Esperamos recibir mensajes de los clientes (nuevas conexiones o mensajes de los clientes ya conectados)
             
             auxfds = readfds;
             
             salida = select(FD_SETSIZE,&auxfds,NULL,NULL,NULL);
-            
             if(salida > 0){
                 
                 
@@ -149,7 +155,7 @@ int main(){
                                     FD_SET(new_sd,&readfds);
                                     
                                     strcpy(dato, "Bienvenido al chat\n");
-                                    printf("Cliente conectado\n");
+                                    printf("Cliente conectado\n\n");
                                     send(new_sd,dato,strlen(dato),0);
                                     //for(j=0; j<(numClientes);j++){
                                     bzero(dato,sizeof(dato));
@@ -180,64 +186,78 @@ int main(){
                                     std::cout<<"Dato: "<<dato<<std::endl;
                                     std::cout<<"Nombre: "<<clientes[numClientes].user<<" Pass: "<<clientes[numClientes].password<<std::endl;
                                     if(recibidos > 0){
-                                        if((strncmp(dato,"INICIAR-PARTIDA", 15)==0) && (registrado(clientes[numClientes].user, clientes[numClientes].password))==true){
-                                            bzero(dato,sizeof(dato));
-                                            strcpy(dato, "Puede Jugar\n");
-                                            send(clientes[numClientes].socket,dato,sizeof(dato),0);
-                     
-                                        }else if((strncmp(dato,"INICIAR-PARTIDA", 15)==0) && (registrado(clientes[numClientes].user, clientes[numClientes].password))==false){
-                                            bzero(dato,sizeof(dato));
-                                            printf("Debe registrarse el usuario %d\n", i);
-                                            strcpy(dato, "Debe registrarse o loguearse para poder jugar\n");
-                                            send(clientes[numClientes].socket,dato,sizeof(dato),0);
-                                        }
-                     
-                                        if(strncmp(dato,"USUARIO ",8)==0){
-                                            sscanf(dato, "%s %s", primeraPalabra, usuario);
-                                        }else if(strncmp(dato,"PASSWORD ", 9)==0){
-                                            sscanf(dato, "%s %s", primeraPalabra, pass);
-                                        }else if(strncmp(dato, "REGISTRO ", 9)==0){
-                                            //sscanf(dato, "%s %s %s %s %s", primeraPalabra, usuario, clientes[numClientes].user, pass, clientes[numClientes].password);
-                                            
-                                            iss.str(dato);
-                                            for(int k=0;k<5;k++){
-                                                iss>>value;
-                                                if(k==2)
-                                                    strcpy(clientes[numClientes].user,(value.c_str()));
-                                                if(k==4)
-                                                    strcpy(clientes[numClientes].password,(value.c_str()));
-                                            }
+                                        if(strcmp(dato, "\n")){
+                                            std::cout<<"Se ha recibido un INTRO\n";
+                                        }else{
+                                            if((strncmp(dato,"INICIAR-PARTIDA", 15)==0) && (registrado(clientes[numClientes].user, clientes[numClientes].password)==true) && (clientes[numClientes].login==1)){
+                                                bzero(dato,sizeof(dato));
+                                                strcpy(dato, "Puede Jugar\n");
+                                                send(clientes[numClientes].socket,dato,sizeof(dato),0);
 
-                                            registered=false;
-                                            fich=fopen("BASEDEDATOS.txt", "r");
-                                            fseek(fich, 0, SEEK_END);
-                                            size=ftell(fich);
-                                            fseek(fich, 0, SEEK_SET);
-                                            if(size>0){
-                                                while(!feof(fich)){
-                                                    fscanf(fich, "%s\t%s", usuarioAux, passwordAux);
-                                                    if(strcmp(usuarioAux, clientes[numClientes].user)==0 && strcmp(passwordAux, clientes[numClientes].password)==0){
-                                                        std::cout<<"Usuario ya registrado\n";
-                                                        registered==true;
-                                                        fclose(fich);
-                                                    }
-                                                }   
-                                            }else{
-                                                if(registered==false){
-                                                    fichAux=fopen("BASEDEDATOS.txt", "w+a");
-                                                    fprintf(fichAux,"%s\t%s",clientes[numClientes].user,clientes[numClientes].password);
-                                                    fclose(fichAux);
-                                                }   
-                                            }    
-                                        }else if(strcmp(dato,"SALIR\n") == 0){
-                                     
-                                            for (j = 0; j < numClientes; j++){
-                                                send(clientes[numClientes].socket, "Desconexion servidor\n", strlen("Desconexion servidor\n"),0);
-                                                close(clientes[numClientes].socket);
-                                                FD_CLR(clientes[numClientes].socket,&readfds);
+                                            }else if((strncmp(dato,"INICIAR-PARTIDA", 15)==0) && (registrado(clientes[numClientes].user, clientes[numClientes].password))==false){
+                                                bzero(dato,sizeof(dato));
+
+                                                printf("Debe registrarse el usuario %d\n", i);
+                                                strcpy(dato, "Debe registrarse o loguearse para poder jugar\n");
+                                                send(clientes[numClientes].socket,dato,sizeof(dato),0);
                                             }
-                                                close(sd);
-                                                exit(-1);   
+                         
+                                            if(strncmp(dato,"USUARIO ",8)==0){
+                                                sscanf(dato, "%s %s", primeraPalabra, usuarioAux1);
+                                                clientes[numClientes].user=usuarioAux1.c_str();
+                                            }else if(strncmp(dato,"PASSWORD ", 9)==0){
+                                                sscanf(dato, "%s %s", primeraPalabra, passwordAux1);
+                                                clientes[numClientes].password=passwordAux1.c_str();
+                                                if(encontrarJugador(clientes[numClientes].user, clientes[numClientes].password)){
+                                                    clientes[numClientes].login=1;
+                                                }
+                                            }else if(strncmp(dato, "REGISTRO ", 9)==0){
+                                                //sscanf(dato, "%s %s %s %s %s", primeraPalabra, usuario, clientes[numClientes].user, pass, clientes[numClientes].password);
+                                                
+                                                iss.str(dato);
+                                                for(int k=0;k<5;k++){
+                                                    iss>>value;
+                                                    if(k==2)
+                                                        strcpy(clientes[numClientes].user,(value.c_str()));
+                                                    if(k==4)
+                                                        strcpy(clientes[numClientes].password,(value.c_str()));
+                                                }
+
+                                                if((registrado(clientes[numClientes].user, clientes[numClientes].password))==true && clientes[numClientes].login==0){
+                                                    std::cout<<"El usuario "<<clientes[numClientes].user<<" no se ha logueado aún\n";
+                                                }
+
+                                                registered=false;
+                                                fich=fopen("BASEDEDATOS.txt", "r");
+                                                fseek(fich, 0, SEEK_END);
+                                                size=ftell(fich);
+                                                fseek(fich, 0, SEEK_SET);
+                                                if(size>0){
+                                                    while(!feof(fich)){
+                                                        fscanf(fich, "%s\t%s", usuarioAux, passwordAux);
+                                                        if(strcmp(usuarioAux, clientes[numClientes].user)==0 && strcmp(passwordAux, clientes[numClientes].password)==0){
+                                                            std::cout<<"Usuario ya registrado\n";
+                                                            registered==true;
+                                                            fclose(fich);
+                                                        }
+                                                    }   
+                                                }else{
+                                                    if(registered==false){
+                                                        fichAux=fopen("BASEDEDATOS.txt", "w+a");
+                                                        fprintf(fichAux,"%s\t%s",clientes[numClientes].user,clientes[numClientes].password);
+                                                        fclose(fichAux);
+                                                    }   
+                                                }    
+                                            }else if(strcmp(dato,"SALIR\n") == 0){
+                                         
+                                                for (j = 0; j < numClientes; j++){
+                                                    send(clientes[numClientes].socket, "Desconexion servidor\n", strlen("Desconexion servidor\n"),0);
+                                                    close(clientes[numClientes].socket);
+                                                    FD_CLR(clientes[numClientes].socket,&readfds);
+                                                }
+                                                    close(sd);
+                                                    exit(-1);   
+                                            }
                                         }
                                     }else if(recibidos==0){
                                     printf("El socket %d, ha introducido ctrl+c\n", i);
@@ -293,6 +313,29 @@ void manejador (int signum){
 
 
 bool registrado(char *nombre, char *password){
+    FILE *fichero;
+    double size;
+    fichero=fopen("BASEDEDATOS.txt", "r");
+    char *usuario, *pass;
+    fseek(fichero, 0, SEEK_END);
+    size=ftell(fichero);
+    fseek(fichero, 0, SEEK_SET);
+    if(size>0){
+        while(!feof(fichero)){
+            fscanf(fichero, "%s\t%s", usuario, pass);
+            if((strcmp(nombre,usuario)==0) && (strcmp(password,pass)==0)){
+                fclose(fichero);
+                return true;
+            }
+        }
+    }else{
+        fclose(fichero);
+        return false;   
+    }
+}
+
+
+bool encontrarJugador(char *nombre, char *password){
     FILE *fichero;
     double size;
     fichero=fopen("BASEDEDATOS.txt", "r");

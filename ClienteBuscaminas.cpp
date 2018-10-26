@@ -15,7 +15,8 @@
 
 
 int main(){
-  
+std::cout << CLEAR_SCREEN;
+PLACE(1,0); 
     /*---------------------------------------------------- 
         Descriptor del socket y buffer de datos                
     -----------------------------------------------------*/
@@ -68,10 +69,11 @@ int main(){
     /* ------------------------------------------------------------------
         Se transmite la información
     -------------------------------------------------------------------*/
+
     do{
         auxfds = readfds;
         salida = select(sd+1,&auxfds,NULL,NULL,NULL);
-        
+        std::cout<<"Los comandos son los siguientes: \n"<<BIGREEN<<"INICIAR-PARTIDA"<<RESET<<" (Requiere estar registrado y logueado)\n"<<BIGREEN<<"USUARIO <nombre_usuario>"<<RESET<<" para introducir tu nombre de usuario\n"<<BIGREEN<<"PASSWORD <password_del_usuario> "<<RESET<<"con esto se completa el login del usuario\n"<<BIGREEN<<"REGISTRO USUARIO <nombre_usuario> PASSWORD <password_del_usuario> "<<RESET<<"con esto puede registrarse en el juego\n"<<BIGREEN<<"SALIR "<<RESET<<"para salir del juego\n";
         //Tengo mensaje desde el servidor
         if(FD_ISSET(sd, &auxfds)){
             
@@ -87,12 +89,9 @@ int main(){
                 fin =1;
             
         }else{
-            
             //He introducido información por teclado
             if(FD_ISSET(0,&auxfds)){
                 bzero(buffer,sizeof(buffer));
-                
-                std::cout<<"Los comandos son los siguientes: \n"<<BIGREEN<<"INICIAR-PARTIDA"<<RESET<<" (Requiere estar registrado y logueado)\n"<<BIGREEN<<"USUARIO <nombre_usuario>"<<RESET<<" para introducir tu nombre de usuario\n"<<BIGREEN<<"PASSWORD <password_del_usuario> "<<RESET<<"con esto se completa el login del usuario\n"<<BIGREEN<<"REGISTRO USUARIO <nombre_usuario> PASSWORD <password_del_usuario> "<<RESET<<"con esto puede registrarse en el juego\n"<<BIGREEN<<"SALIR "<<RESET<<"para salir del juego\n";
                 fgets(buffer, sizeof(buffer), stdin);
                 //size_t tam=strlen(buffer)-1; //\0
                 //if(buffer[tam]=='\n'){
