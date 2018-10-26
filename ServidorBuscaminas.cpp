@@ -30,8 +30,6 @@ void manejador(int signum);
 //void salirCliente(int socket, fd_set * readfds, int * numClientes, struct clients *cliente);
 bool registrado(char *nombre, char *password);
 
-bool encontrarJugador(char *nombre, char *password);
-
 int main(){
   
 	/*---------------------------------------------------- 
@@ -55,7 +53,7 @@ int main(){
     std::string value;
     //int clientes[MAX_CLIENTS];
     int numClientes = 0;
-    bool registerBool=false;
+    bool registerBool=false, registered=false;
     char *f;
     char *primeraPalabra, *usuario, *pass, *usuarioAux, *passwordAux;
     std::string usuarioAux1, passwordAux1;
@@ -203,12 +201,12 @@ int main(){
                                             }
                          
                                             if(strncmp(dato,"USUARIO ",8)==0){
-                                                sscanf(dato, "%s %s", primeraPalabra, usuarioAux1);
-                                                clientes[numClientes].user=usuarioAux1.c_str();
+                                                sscanf(dato, "%s %s", primeraPalabra, usuarioAux);
+                                                strcpy(clientes[numClientes].user,(usuarioAux1.c_str()));
                                             }else if(strncmp(dato,"PASSWORD ", 9)==0){
-                                                sscanf(dato, "%s %s", primeraPalabra, passwordAux1);
-                                                clientes[numClientes].password=passwordAux1.c_str();
-                                                if(encontrarJugador(clientes[numClientes].user, clientes[numClientes].password)){
+                                                sscanf(dato, "%s %s", primeraPalabra, passwordAux);
+                                                strcpy(clientes[numClientes].password,(passwordAux1.c_str()));
+                                                if(registrado(clientes[numClientes].user, clientes[numClientes].password)){
                                                     clientes[numClientes].login=1;
                                                 }
                                             }else if(strncmp(dato, "REGISTRO ", 9)==0){
@@ -313,29 +311,6 @@ void manejador (int signum){
 
 
 bool registrado(char *nombre, char *password){
-    FILE *fichero;
-    double size;
-    fichero=fopen("BASEDEDATOS.txt", "r");
-    char *usuario, *pass;
-    fseek(fichero, 0, SEEK_END);
-    size=ftell(fichero);
-    fseek(fichero, 0, SEEK_SET);
-    if(size>0){
-        while(!feof(fichero)){
-            fscanf(fichero, "%s\t%s", usuario, pass);
-            if((strcmp(nombre,usuario)==0) && (strcmp(password,pass)==0)){
-                fclose(fichero);
-                return true;
-            }
-        }
-    }else{
-        fclose(fichero);
-        return false;   
-    }
-}
-
-
-bool encontrarJugador(char *nombre, char *password){
     FILE *fichero;
     double size;
     fichero=fopen("BASEDEDATOS.txt", "r");
