@@ -209,7 +209,9 @@ buscaminas.o: buscaminas.cpp.o
 
 # target to build an object file
 buscaminas.cpp.o:
+	$(MAKE) -f CMakeFiles/ServidorB.dir/build.make CMakeFiles/ServidorB.dir/buscaminas.cpp.o
 	$(MAKE) -f CMakeFiles/buscaminasOnline.dir/build.make CMakeFiles/buscaminasOnline.dir/buscaminas.cpp.o
+	$(MAKE) -f CMakeFiles/ClienteB.dir/build.make CMakeFiles/ClienteB.dir/buscaminas.cpp.o
 .PHONY : buscaminas.cpp.o
 
 buscaminas.i: buscaminas.cpp.i
@@ -218,7 +220,9 @@ buscaminas.i: buscaminas.cpp.i
 
 # target to preprocess a source file
 buscaminas.cpp.i:
+	$(MAKE) -f CMakeFiles/ServidorB.dir/build.make CMakeFiles/ServidorB.dir/buscaminas.cpp.i
 	$(MAKE) -f CMakeFiles/buscaminasOnline.dir/build.make CMakeFiles/buscaminasOnline.dir/buscaminas.cpp.i
+	$(MAKE) -f CMakeFiles/ClienteB.dir/build.make CMakeFiles/ClienteB.dir/buscaminas.cpp.i
 .PHONY : buscaminas.cpp.i
 
 buscaminas.s: buscaminas.cpp.s
@@ -227,7 +231,9 @@ buscaminas.s: buscaminas.cpp.s
 
 # target to generate assembly for a file
 buscaminas.cpp.s:
+	$(MAKE) -f CMakeFiles/ServidorB.dir/build.make CMakeFiles/ServidorB.dir/buscaminas.cpp.s
 	$(MAKE) -f CMakeFiles/buscaminasOnline.dir/build.make CMakeFiles/buscaminasOnline.dir/buscaminas.cpp.s
+	$(MAKE) -f CMakeFiles/ClienteB.dir/build.make CMakeFiles/ClienteB.dir/buscaminas.cpp.s
 .PHONY : buscaminas.cpp.s
 
 main.o: main.cpp.o

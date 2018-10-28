@@ -26,7 +26,7 @@ PLACE(1,0);
     socklen_t len_sockname;
     fd_set readfds, auxfds;
     int salida;
-    int fin = 0;
+    int fin = 0, login=0;
     
     
     /* --------------------------------------------------
@@ -73,21 +73,27 @@ PLACE(1,0);
     do{
         auxfds = readfds;
         salida = select(sd+1,&auxfds,NULL,NULL,NULL);
-        std::cout<<"Los comandos son los siguientes: \n"<<BIGREEN<<"INICIAR-PARTIDA"<<RESET<<" (Requiere estar registrado y logueado)\n"<<BIGREEN<<"USUARIO <nombre_usuario>"<<RESET<<" para introducir tu nombre de usuario\n"<<BIGREEN<<"PASSWORD <password_del_usuario> "<<RESET<<"con esto se completa el login del usuario\n"<<BIGREEN<<"REGISTRO USUARIO <nombre_usuario> PASSWORD <password_del_usuario> "<<RESET<<"con esto puede registrarse en el juego\n"<<BIGREEN<<"SALIR "<<RESET<<"para salir del juego\n";
+        if(login==0){
+            std::cout<<"Los comandos son los siguientes: \n"<<BIGREEN<<"INICIAR-PARTIDA"<<RESET<<" (Requiere estar registrado y logueado)\n"<<BIGREEN<<"USUARIO <nombre_usuario>"<<RESET<<" para introducir tu nombre de usuario\n"<<BIGREEN<<"PASSWORD <password_del_usuario> "<<RESET<<"con esto se completa el login del usuario\n"<<BIGREEN<<"REGISTRO USUARIO <nombre_usuario> PASSWORD <password_del_usuario> "<<RESET<<"con esto puede registrarse en el juego\n"<<BIGREEN<<"SALIR "<<RESET<<"para salir del juego\n";
+        }
         //Tengo mensaje desde el servidor
         if(FD_ISSET(sd, &auxfds)){
             
             bzero(buffer,sizeof(buffer));
             recv(sd,buffer,sizeof(buffer),0);
             
-            printf("\n%s\n",buffer);
+            //printf("\n%s\n",buffer);
+            std::cout<<BIRED<<"\nSe recibe del servidor "<<RESET<<buffer<<std::endl;
             
             if(strcmp(buffer,"Demasiados clientes conectados\n") == 0)
                 fin =1;
             
             if(strcmp(buffer,"Desconexion servidor\n") == 0)
                 fin =1;
-            
+            if(strcmp(buffer,"Puede Jugar\n") == 0)
+                login=1;
+            if(strcmp(buffer,"Vuelve a la cola\n") == 0)
+                login=0;   
         }else{
             //He introducido información por teclado
             if(FD_ISSET(0,&auxfds)){
@@ -98,7 +104,7 @@ PLACE(1,0);
                 buffer[strlen(buffer)-1]='\0';
                //   printf("1%s%c-%d\n", buffer, buffer[tam], strlen(buffer));
                 //}
-                printf("%s-%d\n", buffer, (unsigned)strlen(buffer));
+                //printf("\n\n%s-%d\n\n", buffer, (unsigned)strlen(buffer));
                 if(strcmp(buffer,"SALIR") == 0){ //Se deberia enviar al servidor tambien
                         fin = 1;
                 }
