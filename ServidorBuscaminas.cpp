@@ -25,11 +25,11 @@ struct clients{
         int socket;
         int estado;
         int login;
-        char color; // JUgador A o B
+        int turno; // JUgador A o B
         int partida;
 };
 
-std::vector<clients>cola(MAX_CLIENTS);
+std::vector<clients>cola;
 
 //SERVIDOR CHAT BUSCAMINAS
 
@@ -54,7 +54,6 @@ int main(){
 	socklen_t from_len;
     fd_set readfds, auxfds;
     int salida;
-    std::string values={'0'};
     //int clientes[MAX_CLIENTS];
     int numClientes = 0;
     bool registerBool=false, registered=false;
@@ -158,13 +157,14 @@ int main(){
                                     clientes[numClientes].socket=new_sd;
                                     clientes[numClientes].estado=0;
                                     clientes[numClientes].login=0;
-                                    strcpy(clientes[numClientes].user,values.c_str());
-                                    strcpy(clientes[numClientes].password,values.c_str());
+                                    strcpy(clientes[numClientes].user, "0");
+                                    strcpy(clientes[numClientes].password,"0");
+                                    clientes[numClientes].turno=-1;
 
                                     //std::cout<<"Cliente socket: "<<clientes[numClientes].socket<<std::endl;
                                     FD_SET(new_sd,&readfds);
                                     
-                                    strcpy(dato, "Bienvenido al chat\n");
+                                    strcpy(dato, "Bienvenido al Buscaminas Online\n");
                                     printf("Cliente conectado\n\n");
                                     send(new_sd,dato,strlen(dato),0);
                                     //for(j=0; j<(numClientes);j++){
@@ -206,19 +206,22 @@ int main(){
                                             mientras que el size de la cola sea mayor que 1
                                             Si hay 4 jugadores, se guardarán 2 clientes con el mismo id de partida
                                             y los otros dos con id++*/
-                                            do{
-                                                size=(int)cola.size();
-                                                oper1=(size-size);
-                                                oper2=(size-(size-1));
-                                                clientesAux[oper1]=(cola.back());
-                                                cola.pop_back();
-                                                clientesAux[oper2]=(cola.back());
-                                                cola.pop_back();
-                                                clientesAux[oper1].partida=id;
-                                                clientesAux[oper2].partida=id;
-                                                id++;
-                                            }while(cola.size()>1);
-
+                                            if(cola.size()>1){
+                                                do{
+                                                    size=(int)cola.size();
+                                                    oper1=(size-size);
+                                                    oper2=(size-(size-1));
+                                                    clientesAux[oper1]=(cola.back());
+                                                    cola.pop_back();
+                                                    clientesAux[oper2]=(cola.back());
+                                                    cola.pop_back();
+                                                    clientesAux[oper1].partida=id;
+                                                    clientesAux[oper2].partida=id;
+                                                    jugar(clientesAux[oper1], clientesAux[oper2]);
+                                                    id++;
+                                                }while(cola.size()>1);
+                                            }
+                                            
                                         }else if((strncmp(dato,"INICIAR-PARTIDA", 15)==0) && (!registrado(clientes[j].user, clientes[j].password))){
                                             bzero(dato,sizeof(dato));
                                             strcpy(dato, "Debe registrarse para poder jugar\n");
@@ -446,62 +449,57 @@ bool registrado(char *nombre, char *password){
 
 
 void jugar(clients a, clients b){
-    //Buscaminas juego;
+    Buscaminas juego;
     int recibido=-1;
     int aux=0;
     char dato[MSG_SIZE];
 
 
-    //juego.crearMatrizEscondida();
+    juego.crearMatrizEscondida();
+    bzero(dato,sizeof(dato));
     strcpy(dato, "Empieza el juego, eres el jugador A");
     send( a.socket,dato,sizeof(dato),0);
     bzero(dato,sizeof(dato));
     strcpy(dato, "Empieza el juego, eres el jugador B");
     send( b.socket,dato,sizeof(dato),0);
-    bzero(dato,sizeof(dato));
+    
         
 
-    while(aux==0)
-    {
-        strcpy(dato, "Turno de  A");
+    while(aux==0){ //WHILE JUEGO
+        a.turno=1;
+        bzero(dato,sizeof(dato));
+        strcpy(dato, "Es tu turno");
         send( a.socket,dato,sizeof(dato),0);
         bzero(dato,sizeof(dato));
-        strcpy(dato, "Turno de  A");
+        strcpy(dato, "Es de el turno de A");
         send( b.socket,dato,sizeof(dato),0);
-        bzero(dato,sizeof(dato));
+        juego.mostrarMatrizMostrar();
+        do{ //TURNO A
+            
+        }while(a.turno==1);
+        //Cuando se muestree casilla o se ponga bandera, a.turno=0;
+
+
         //bloquear b
         //mandar string a A con todas las matrices
         //el cliente hace un segundo contructor con 3 parametros como las 3 matrices
         // en el cliente se ejecuta buscaminas juego.
         //el cliente A despues de ejecutar buscaminas juego envia las cadenas con las matrices modificadas en el siguiente recv
-        while(recibido==-1)
-        {
-        recibido = recv(a.socket,dato,sizeof(dato),0);
-        }
-
-        ///se modifican las nuevas matrices aqui.
+        b.turno=1;
         bzero(dato,sizeof(dato));
-        recibido=-1;
-
-
-        strcpy(dato, "Turno de  B");
+        strcpy(dato, "Es de el turno de B");
         send( a.socket,dato,sizeof(dato),0);
         bzero(dato,sizeof(dato));
-        strcpy(dato, "Turno de  B");
+        strcpy(dato, "Es tu turno");
         send( b.socket,dato,sizeof(dato),0);
-        bzero(dato,sizeof(dato));
+        juego.mostrarMatrizMostrar();
+        do{
+            
+        }while(b.turno==1);
         //bloquear a
         //mandar string a B con la matriz, en el cliente se ejecuta buscaminas juego.
         //el cliente a despues de ejecutar buscaminas juego envia una cadena con la matriz modificada en el siguiente recv
-        while(recibido==-1)
-        {
-        recibido = recv(a.socket,dato,sizeof(dato),0);
-        }
-        bzero(dato,sizeof(dato));
-        recibido=-1;
-
     }
-
 }
 
 

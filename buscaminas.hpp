@@ -33,19 +33,22 @@ class Buscaminas{
 			encontradas_=0;
 
 			MatrizEscondida.resize(10);
-				for (int a = 0; a < 10; a++){
-					MatrizEscondida[a].resize(10,0);
-				}
+			for (int a = 0; a < 10; a++){
+				MatrizEscondida[a].resize(10,0);
+			}
+			
 			MatrizMostrar.resize(10);
-				for (int a = 0; a < 10; a++){
-					MatrizMostrar[a].resize(10,-2);
-				}
+			for (int a = 0; a < 10; a++){
+				MatrizMostrar[a].resize(10,-2);
+			}
 
 			Visitadas.resize(10);
-				for (int a = 0; a < 10; a++){
-					Visitadas[a].resize(10,0);
-				}
+			for (int a = 0; a < 10; a++){
+				Visitadas[a].resize(10,0);
+			}
 		}
+
+
 		//Funciones GET
 		inline std::vector<std::vector<int> > getMatrizEscondida(){return MatrizEscondida;}
 		inline std::vector<std::vector<int> > getMatrizMostrar(){return MatrizMostrar;}
