@@ -15,7 +15,7 @@
 //CLIENTE CHAT PARA BUSCAMINAS
 
 
-int main(){
+int main(int argc, char *argv[]){
 std::cout << CLEAR_SCREEN;
 PLACE(1,0); 
     /*---------------------------------------------------- 
@@ -50,6 +50,7 @@ PLACE(1,0);
     sockname.sin_family = AF_INET;
     sockname.sin_port = htons(2000);
     sockname.sin_addr.s_addr =  inet_addr("127.0.0.1");
+    //sockname.sin_addr.s_addr =  inet_addr(argv[1]);
 
     /* ------------------------------------------------------------------
         Se solicita la conexión con el servidor

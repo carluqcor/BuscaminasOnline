@@ -54,7 +54,7 @@ int Buscaminas::getX(char x){
 	}
 }
 
-bool Buscaminas::estaVisitada(char &x , int y)
+bool Buscaminas::estaVisitada(char x , int y)
 {
 	
 	std::vector< std::vector<int > > aux;
@@ -121,14 +121,14 @@ int Buscaminas::getNumero(int y){
 	}
 }
 
-bool Buscaminas::coordenadas(char &x, int &y){
+bool Buscaminas::coordenadas(char x, int y){
 	int comprobador;
 	comprobador=getX(x);
 	std::cout<<"Comprobador: "<<comprobador<<std::endl;
 	std::cout<<"upper: "<<std::isupper(x)<<std::endl;
 	if((std::isupper(x))!=0 && (comprobador!=-1)){
 		comprobador=getNumero(y);
-		std::cout<<"Comprobador: "<<comprobador<<" y: "<<y<<" isdigit: "<<std::isdigit(y)<<std::endl;
+		std::cout<<"Comprobador: "<<comprobador<<" y: "<<y<<std::endl;
 		if((comprobador!=-1)){
 			std::cout<<"Hola soy true\n";
 			return true;
@@ -206,7 +206,7 @@ void Buscaminas::crearMatrizEscondida(){
 	setMatrizEscondida(MatrizAux);
 }
 
-void Buscaminas::MatrizPinchar(char &x, int y){
+void Buscaminas::MatrizPinchar(char x, int y){
 	punto xd;
 	std::vector<std::vector<int > > MatrizAux1=getMatrizEscondida();
 	std::vector<std::vector<int > > MatrizAux2=getMatrizMostrar();
@@ -267,7 +267,7 @@ punto Buscaminas::abrirZeros(int m , int n , punto aux)
 	return aux;
 }
 
-void Buscaminas::MatrizBandera(char &x, int y, char jugador){
+void Buscaminas::MatrizBandera(char x, int y, char jugador){
 	std::vector<std::vector<int > > MatrizAux ;
 	std::vector<std::vector<int > > MatrizAux2 ;
 	MatrizAux=getMatrizMostrar();

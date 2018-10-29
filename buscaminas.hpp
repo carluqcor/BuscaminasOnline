@@ -74,15 +74,15 @@ class Buscaminas{
 		inline void setEncontradas(int encontradas){encontradas_=encontradas;}
 
 		inline void visitar(int x, int y){Visitadas[x][y]=1;}
-		bool estaVisitada(char &x, int y);
+		bool estaVisitada(char x, int y);
 		bool estaVisitada2(int x , int y );
 
-		void MatrizPinchar(char &x, int y); //Cambia la matriz a mostrar
-		void MatrizBandera(char &x, int y , char jugador);
+		void MatrizPinchar(char x, int y); //Cambia la matriz a mostrar
+		void MatrizBandera(char x, int y , char jugador);
 		void crearMatrizEscondida();
 		void mostrarMatrizEscondida();
 		void mostrarMatrizMostrar();
-		bool coordenadas(char &x, int &y);
+		bool coordenadas(char x, int y);
 		void buscaminasGame();
 		void Encontrar();
 		void ganar();

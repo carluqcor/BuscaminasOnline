@@ -209,8 +209,8 @@ int main(){
                                             Si hay 4 jugadores, se guardarán 2 clientes con el mismo id de partida
                                             y los otros dos con id++*/
                                             std::cout<<"Size: "<<cola.size()<<std::endl;
-                                            if(cola.size()>1){
-                                                do{
+                                            for(int x=0;x<=cola.size();x++){
+                                                if(cola.size()>1){
                                                     size=(int)cola.size();
                                                     oper1=(size-size);
                                                     oper2=(size-(size-1));
@@ -222,7 +222,7 @@ int main(){
                                                     clientesAux[oper2].partida=id;
                                                     jugar(clientesAux[oper1], clientesAux[oper2]);
                                                     id++;
-                                                }while(cola.size()>1);
+                                                }
                                             }
                                             
                                         }else if((strncmp(dato,"INICIAR-PARTIDA", 15)==0) && (!registrado(clientes[j].user, clientes[j].password)) && verificacion==0){
@@ -521,11 +521,11 @@ void jugar(clients a, clients b){
                     std::cout<<"k: "<<k<<std::endl;
                     if(k==2 && juego.coordenadas(*a.letra, a.numero)==true){
                         std::cout<<"Hola 1\n";
-                        if(juego.estaVisitada(*a.letra, numero)==true){
+                        if(juego.estaVisitada(*a.letra, a.numero)==true){
                             printf("casilla ya visitada\n");
                         }
                         std::cout<<"Hola 2\n";
-                        juego.MatrizPinchar(*a.letra, numero);
+                        juego.MatrizPinchar(*a.letra, a.numero);
                         a.turno=0;
                     }
                 }
@@ -549,12 +549,12 @@ void jugar(clients a, clients b){
                         a.numero=atoi((value.c_str()));                       
                     }
 
-                    if(k==2 && juego.coordenadas(*a.letra, numero)){
+                    if(k==2 && juego.coordenadas(*a.letra, a.numero)){
                         if(juego.estaVisitada(*a.letra, numero)==true){
                             printf("casilla ya visitada\n");
                         }
 
-                        juego.MatrizBandera(*a.letra, numero, 'A');
+                        juego.MatrizBandera(*a.letra, a.numero, 'A');
                         a.turno=0;
                     }
                 }
@@ -616,11 +616,11 @@ void jugar(clients a, clients b){
                     }
                     if(k==2 && juego.coordenadas(*b.letra, b.numero)){
                         std::cout<<"Hola 1\n";
-                        if(juego.estaVisitada(*b.letra, numero)==true){
+                        if(juego.estaVisitada(*b.letra, b.numero)==true){
                             printf("casilla ya visitada\n");
                         }
                         std::cout<<"Hola 2\n";
-                        juego.MatrizPinchar(*b.letra, numero);
+                        juego.MatrizPinchar(*b.letra, b.numero);
                         b.turno=0;
                     }
                 }
@@ -644,12 +644,12 @@ void jugar(clients a, clients b){
                         b.numero=atoi((value.c_str()));                       
                     }
 
-                    if(k==2 && juego.coordenadas(*b.letra, numero)){
-                        if(juego.estaVisitada(*b.letra, numero)==true){
+                    if(k==2 && juego.coordenadas(*b.letra, b.numero)){
+                        if(juego.estaVisitada(*b.letra, b.numero)==true){
                             printf("casilla ya visitada\n");
                         }
 
-                        juego.MatrizBandera(*b.letra, numero, 'A');
+                        juego.MatrizBandera(*b.letra, b.numero, 'A');
                         b.turno=0;
                     }
                 }
