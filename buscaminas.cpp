@@ -54,7 +54,7 @@ int Buscaminas::getX(char x){
 	}
 }
 
-bool Buscaminas::estaVisitada(char x , int y)
+bool Buscaminas::estaVisitada(char &x , int y)
 {
 	
 	std::vector< std::vector<int > > aux;
@@ -121,21 +121,25 @@ int Buscaminas::getNumero(int y){
 	}
 }
 
-void Buscaminas::coordenadas(char &x, int &y){
+bool Buscaminas::coordenadas(char &x, int &y){
 	int comprobador;
-	std::cout<<"Introduzca las coordenadas (Letra, Numero)\n\n";
-	do{
-		std::cout<<"Introduzca una letra: ";
-		std::cin>>x;
-		comprobador=getX(x);
-	}while((std::isupper(x))==0 || (comprobador==-1));
-
-	do{
-		std::cout<<"\nIntroduzca un numero: ";
-		std::cin>>y;
+	comprobador=getX(x);
+	std::cout<<"Comprobador: "<<comprobador<<std::endl;
+	std::cout<<"upper: "<<std::isupper(x)<<std::endl;
+	if((std::isupper(x))!=0 && (comprobador!=-1)){
 		comprobador=getNumero(y);
-	}while((std::isdigit(y))==0 && (comprobador==-1));
-	std::cout<<"\nCoordenada: ("<<x<<", "<<y<<") \n";
+		std::cout<<"Comprobador: "<<comprobador<<" y: "<<y<<" isdigit: "<<std::isdigit(y)<<std::endl;
+		if((comprobador!=-1)){
+			std::cout<<"Hola soy true\n";
+			return true;
+		}else{
+			std::cout<<"Hola soy false 1\n";
+			return false;
+		}
+	}else{
+		std::cout<<"Hola soy false 2\n";
+		return false;
+	}
 }
 
 void Buscaminas::crearMatrizEscondida(){
@@ -202,7 +206,7 @@ void Buscaminas::crearMatrizEscondida(){
 	setMatrizEscondida(MatrizAux);
 }
 
-void Buscaminas::MatrizPinchar(char x, int y){
+void Buscaminas::MatrizPinchar(char &x, int y){
 	punto xd;
 	std::vector<std::vector<int > > MatrizAux1=getMatrizEscondida();
 	std::vector<std::vector<int > > MatrizAux2=getMatrizMostrar();
@@ -263,7 +267,7 @@ punto Buscaminas::abrirZeros(int m , int n , punto aux)
 	return aux;
 }
 
-void Buscaminas::MatrizBandera(char x, int y, char jugador){
+void Buscaminas::MatrizBandera(char &x, int y, char jugador){
 	std::vector<std::vector<int > > MatrizAux ;
 	std::vector<std::vector<int > > MatrizAux2 ;
 	MatrizAux=getMatrizMostrar();
@@ -458,4 +462,22 @@ void Buscaminas::buscaminasCharVisitadas(char aux[101]){
 		}
 	}
 	setVisitadas(MatrizAux);
+}
+
+char Buscaminas::MatrizString(std::vector<std::vector<int> > MatrizAux)
+{
+    int i, j;
+    int cont=0;
+    char aux[250];
+
+    for(i = 0; i < 10; i++){
+        for(j=0 ; j<10; j++){
+
+            aux[cont]=MatrizAux[i][j];
+            cont++;
+        }
+        aux[cont]=',';
+        cont++;
+    }
+    
 }

@@ -36,7 +36,7 @@ class Buscaminas{
 			for (int a = 0; a < 10; a++){
 				MatrizEscondida[a].resize(10,0);
 			}
-			
+
 			MatrizMostrar.resize(10);
 			for (int a = 0; a < 10; a++){
 				MatrizMostrar[a].resize(10,-2);
@@ -48,6 +48,12 @@ class Buscaminas{
 			}
 		}
 
+		Buscaminas(std::vector<std::vector<int> > escondida, std::vector<std::vector<int> > mostrar, std::vector<std::vector<int> >visitadas, int encontradas){
+			setMatrizEscondida(escondida);
+			setMatrizMostrar(mostrar);
+			setVisitadas(visitadas);
+			setEncontradas(encontradas);
+		}
 
 		//Funciones GET
 		inline std::vector<std::vector<int> > getMatrizEscondida(){return MatrizEscondida;}
@@ -68,19 +74,20 @@ class Buscaminas{
 		inline void setEncontradas(int encontradas){encontradas_=encontradas;}
 
 		inline void visitar(int x, int y){Visitadas[x][y]=1;}
-		bool estaVisitada(char x, int y);
+		bool estaVisitada(char &x, int y);
 		bool estaVisitada2(int x , int y );
 
-		void MatrizPinchar(char x, int y); //Cambia la matriz a mostrar
-		void MatrizBandera(char x, int y , char jugador);
+		void MatrizPinchar(char &x, int y); //Cambia la matriz a mostrar
+		void MatrizBandera(char &x, int y , char jugador);
 		void crearMatrizEscondida();
 		void mostrarMatrizEscondida();
 		void mostrarMatrizMostrar();
-		void coordenadas(char &x, int &y);
+		bool coordenadas(char &x, int &y);
 		void buscaminasGame();
 		void Encontrar();
 		void ganar();
 		punto abrirZeros(int m , int n , punto aux);
+		char MatrizString(std::vector<std::vector<int> > MatrizAux);
 
 
 		void buscaminasJuego(char jugador);

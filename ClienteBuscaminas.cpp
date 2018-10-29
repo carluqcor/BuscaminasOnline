@@ -10,6 +10,7 @@
 #include <arpa/inet.h>
 #include <iostream>
 #include "macros.hpp"
+#include "buscaminas.hpp"
 
 //CLIENTE CHAT PARA BUSCAMINAS
 
@@ -26,7 +27,9 @@ PLACE(1,0);
     socklen_t len_sockname;
     fd_set readfds, auxfds;
     int salida;
-    int fin = 0, login=0;
+    int fin = 0, partida=0;
+    std::vector<std::vector<int> > escondida, mostrar, visitadas;
+    int encontradas=0;
     
     
     /* --------------------------------------------------
@@ -73,9 +76,6 @@ PLACE(1,0);
     do{
         auxfds = readfds;
         salida = select(sd+1,&auxfds,NULL,NULL,NULL);
-        if(login==0){
-            std::cout<<"Los comandos son los siguientes: \n"<<BIGREEN<<"INICIAR-PARTIDA"<<RESET<<" (Requiere estar registrado y logueado)\n"<<BIGREEN<<"USUARIO <nombre_usuario>"<<RESET<<" para introducir tu nombre de usuario\n"<<BIGREEN<<"PASSWORD <password_del_usuario> "<<RESET<<"con esto se completa el login del usuario\n"<<BIGREEN<<"REGISTRO USUARIO <nombre_usuario> PASSWORD <password_del_usuario> "<<RESET<<"con esto puede registrarse en el juego\n"<<BIGREEN<<"SALIR "<<RESET<<"para salir del juego\n";
-        }
         //Tengo mensaje desde el servidor
         if(FD_ISSET(sd, &auxfds)){
             
@@ -83,32 +83,34 @@ PLACE(1,0);
             recv(sd,buffer,sizeof(buffer),0);
             
             //printf("\n%s\n",buffer);
-            std::cout<<BIRED<<"\nSe recibe del servidor "<<RESET<<buffer<<std::endl;
-            
-            if(strcmp(buffer,"Demasiados clientes conectados\n") == 0)
-                fin =1;
-            
-            if(strcmp(buffer,"Desconexion servidor\n") == 0)
-                fin =1;
-            if(strcmp(buffer,"Puede Jugar\n") == 0)
-                login=1;
-            if(strcmp(buffer,"Vuelve a la cola\n") == 0)
-                login=0;   
+            if(strcmp(buffer, "Esta en partida")==0){
+                Buscaminas juego(escondida, mostrar, visitadas, encontradas);
+            }else{
+                std::cout<<BIRED<<"\nSe recibe del servidor "<<RESET<<buffer<<std::endl;
+                
+                if(strcmp(buffer,"Demasiados clientes conectados\n") == 0)
+                    fin =1;
+                
+                if(strcmp(buffer,"Desconexion servidor\n") == 0)
+                    fin =1;
+                if(strcmp(buffer,"Vuelve a la cola\n") == 0)
+                    partida=0;
+            }
         }else{
             //He introducido información por teclado
             if(FD_ISSET(0,&auxfds)){
                 bzero(buffer,sizeof(buffer));
                 fgets(buffer, sizeof(buffer), stdin);
-                //size_t tam=strlen(buffer)-1; //\0
-                //if(buffer[tam]=='\n'){
                 buffer[strlen(buffer)-1]='\0';
-               //   printf("1%s%c-%d\n", buffer, buffer[tam], strlen(buffer));
-                //}
-                //printf("\n\n%s-%d\n\n", buffer, (unsigned)strlen(buffer));
-                if(strcmp(buffer,"SALIR") == 0){ //Se deberia enviar al servidor tambien
-                        fin = 1;
-                }
-                send(sd,buffer,sizeof(buffer),0);  
+                if(strcmp(buffer,"AYUDA")==0){
+                    std::cout<<"Los comandos son los siguientes: \n"<<BIGREEN<<"INICIAR-PARTIDA"<<RESET<<" (Requiere estar registrado y logueado)\n"<<BIGREEN<<"USUARIO <nombre_usuario>"<<RESET<<" para introducir tu nombre de usuario\n"<<BIGREEN<<"PASSWORD <password_del_usuario> "<<RESET<<"con esto se completa el login del usuario\n"<<BIGREEN<<"REGISTRO USUARIO <nombre_usuario> PASSWORD <password_del_usuario> "<<RESET<<"con esto puede registrarse en el juego\n"<<BIGREEN<<"SALIR "<<RESET<<"para salir del juego\n";
+                    bzero(buffer,sizeof(buffer));
+                }else{                
+                    if(strcmp(buffer,"SALIR") == 0){ //Se deberia enviar al servidor tambien
+                            fin = 1;
+                    }
+                    send(sd,buffer,sizeof(buffer),0);
+                }  
             } 
         }           
     }while(fin == 0);
