@@ -87,7 +87,7 @@ class Buscaminas{
 		void Encontrar();
 		void ganar();
 		punto abrirZeros(int m , int n , punto aux);
-		char MatrizString(std::vector<std::vector<int> > MatrizAux);
+		char MatrizString();
 
 
 		void buscaminasJuego(char jugador);
