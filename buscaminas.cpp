@@ -464,17 +464,18 @@ void Buscaminas::buscaminasCharVisitadas(char aux[101]){
 	setVisitadas(MatrizAux);
 }
 
-char Buscaminas::MatrizString()
-{
+void Buscaminas::MatrizString(char *aux){
     int i, j;
     int cont=0;
-    char aux[250];
     std::vector<std::vector<int> > MatrizAux = getMatrizMostrar();
-
     for(i = 0; i < 10; i++){
         for(j=0 ; j<10; j++){
+            if(MatrizAux[i][j]==-2){
+            	aux[cont]='-';
+            }else{
+        		aux[cont]=MatrizAux[i][j];
+        	}
 
-            aux[cont]=MatrizAux[i][j];
             cont++;
             aux[cont]=',';
         	cont++;
@@ -483,5 +484,5 @@ char Buscaminas::MatrizString()
         cont++;
     }
     
-    return aux[250];
+    std::cout<<"Aux: "<<aux<<std::endl;
 }

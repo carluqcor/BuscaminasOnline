@@ -87,7 +87,7 @@ class Buscaminas{
 		void Encontrar();
 		void ganar();
 		punto abrirZeros(int m , int n , punto aux);
-		char MatrizString();
+		void MatrizString(char *aux);
 
 
 		void buscaminasJuego(char jugador);

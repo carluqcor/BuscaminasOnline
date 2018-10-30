@@ -234,16 +234,16 @@ int main(){
                                                 juegos[id].crearMatrizEscondida();
                                                 bzero(dato,sizeof(dato));
                                                 strcpy(dato, "+Ok. Empieza el juego, eres el jugador A");
-                                                send( clientes[numClientes].socket,dato,sizeof(dato),0);
+                                                send(clientes[numClientes].socket,dato,sizeof(dato),0);
                                                 bzero(dato,sizeof(dato));
                                                 strcpy(dato, "+Ok. Empieza el juego, eres el jugador B");
-                                                send( clientes[numClientes-1].socket,dato,sizeof(dato),0);
+                                                send(clientes[numClientes-1].socket,dato,sizeof(dato),0);
 
                                                 clientes[numClientes].turno=1;
                                                 clientes[numClientes-1].turno=0;
                                                 bzero(dato,sizeof(dato));
                                                 strcpy(dato, "+Ok. Es tu turno");
-                                                send( clientes[numClientes].socket,dato,sizeof(dato),0);
+                                                send(clientes[numClientes].socket,dato,sizeof(dato),0);
                                                 bzero(dato,sizeof(dato));
                                                 strcpy(dato, "+Ok. Es de el turno de A");
                                                 send(clientes[numClientes-1].socket,dato,sizeof(dato),0);
@@ -253,14 +253,11 @@ int main(){
                                                 
 
                                                 ////enviar matriz
-                                                char aux[250];
-                                                aux[250]=juegos[id].MatrizString();
                                                 bzero(dato,sizeof(dato));
-                                                
-                                                send( clientes[numClientes].socket,aux,sizeof(aux),0);
-                                                bzero(dato,sizeof(dato));
-                                                
-                                                send(clientes[numClientes-1].socket,aux,sizeof(aux),0);
+                                                //std::cout<<"Matriz: "<<(juegos[id].MatrizString(dato))<<std::endl;
+                                                juegos[id].MatrizString(dato);
+                                                send(clientes[numClientes].socket,dato,sizeof(dato),0);
+                                                send(clientes[numClientes-1].socket,dato,sizeof(dato),0);
                                                 ////
                                                 id++;
                                             }
