@@ -22,8 +22,8 @@
 struct clients{
         char user[50];
         char password[50];
-        char letra[50];
-        int numero;
+        char letra[1];
+        char numero[1];
         int socket;
         int estado;
         int login;
@@ -498,65 +498,28 @@ void jugar(clients a, clients b){
             recv(a.socket,dato,sizeof(dato),0);
             std::cout<<"dato: "<<dato<<std::endl;
             if(strncmp(dato,"DESCUBRIR ", 10)==0){
-                buffer.str(dato);
-                std::cout<<"Hola 1\n";
-                for(int k=0;k<3;k++){
-                    buffer>>value;
-                    if(k==0 && strcmp(value.c_str(),"DESCUBRIR")!=0){
-                        std::cout<<"value 0: "<<value<<std::endl;
-                        bzero(dato,sizeof(dato));
-                        strcpy(dato, "Error, comando de DESCUBRIR no reconocido\n"); /*REVISAR*/
-                        send(a.socket,dato,sizeof(dato),0);
+                a.letra[0]=dato[10];
+                a.numero[0]=dato[12];
+                std::cout<<"letra: "<<a.letra[0]<<" numero: "<<a.numero[0]<<std::endl;
+                if(juego.coordenadas(*a.letra, atoi(a.numero))==true){
+                    std::cout<<"Hola 1\n";
+                    if(juego.estaVisitada(*a.letra, atoi(a.numero))==true){
+                        printf("casilla ya visitada\n");
                     }
-                    if(k==1){
-                        std::cout<<"value 1: "<<value<<std::endl;
-                        strcpy(a.letra,(value.c_str()));
-                        std::cout<<"Hola inf\n";
-                    }
-
-                    if(k==2){
-                        std::cout<<"value 2: "<<value<<std::endl;
-                        a.numero=atoi((value.c_str()));                       
-                    }
-                    std::cout<<"k: "<<k<<std::endl;
-                    if(k==2 && juego.coordenadas(*a.letra, a.numero)==true){
-                        std::cout<<"Hola 1\n";
-                        if(juego.estaVisitada(*a.letra, a.numero)==true){
-                            printf("casilla ya visitada\n");
-                        }
-                        std::cout<<"Hola 2\n";
-                        juego.MatrizPinchar(*a.letra, a.numero);
-                        a.turno=0;
-                    }
+                    std::cout<<"Hola 2\n";
+                    juego.MatrizPinchar(*a.letra, atoi(a.numero));
+                    a.turno=0;
                 }
             }else if(strncmp(dato,"PONER-BANDERA ", 16)==0){
-                buffer.str(dato);
-                for(int k=0;k<3;k++){
-                    buffer>>value;
-                    if(k==0 && strcmp(value.c_str(),"PONER-BANDERA ")!=0){
-                        bzero(dato,sizeof(dato));
-                        strcpy(dato, "Error, comando de PONER-BANDERA no reconocido\n"); /*REVISAR*/
-                        send(a.socket,dato,sizeof(dato),0);
-                    }
-                    if(k==1){
-                        std::cout<<"value 1: "<<value<<std::endl;
-                        strcpy(a.letra,(value.c_str()));
-                        std::cout<<"Hola inf\n";
+                a.letra[0]=dato[10];
+                a.numero[0]=dato[12];
+                if(juego.coordenadas(*a.letra, atoi(a.numero))){
+                    if(juego.estaVisitada(*a.letra, atoi(a.numero))==true){
+                        printf("casilla ya visitada\n");
                     }
 
-                    if(k==2){
-                        std::cout<<"value 2: "<<value<<std::endl;
-                        a.numero=atoi((value.c_str()));                       
-                    }
-
-                    if(k==2 && juego.coordenadas(*a.letra, a.numero)){
-                        if(juego.estaVisitada(*a.letra, numero)==true){
-                            printf("casilla ya visitada\n");
-                        }
-
-                        juego.MatrizBandera(*a.letra, a.numero, 'A');
-                        a.turno=0;
-                    }
+                    juego.MatrizBandera(*a.letra, atoi(a.numero), 'A');
+                    a.turno=0;
                 }
             }else if(strcmp(dato,"SALIR\n") == 0){
                 send(a.socket, "Desconexion servidor\n", strlen("Desconexion servidor\n"),0);
@@ -594,64 +557,27 @@ void jugar(clients a, clients b){
             recv(b.socket,dato,sizeof(dato),0);
             std::cout<<"dato: "<<dato<<std::endl;
             if(strncmp(dato,"DESCUBRIR ", 10)==0){
-                buffer.str(dato);
-                std::cout<<"Hola 1\n";
-                for(int k=0;k<3;k++){
-                    buffer>>value;
-                    if(k==0 && strcmp(value.c_str(),"DESCUBRIR")!=0){
-                        std::cout<<"value 0: "<<value<<std::endl;
-                        bzero(dato,sizeof(dato));
-                        strcpy(dato, "Error, comando de DESCUBRIR no reconocido\n"); /*REVISAR*/
-                        send(b.socket,dato,sizeof(dato),0);
+                b.letra[0]=dato[10];
+                b.numero[0]=dato[12];
+                if(juego.coordenadas(*b.letra, atoi(b.numero))){                    
+                    std::cout<<"Hola 1\n";
+                    if(juego.estaVisitada(*b.letra, atoi(b.numero))==true){
+                        printf("casilla ya visitada\n");
                     }
-                    if(k==1){
-                        std::cout<<"value 1: "<<value<<std::endl;
-                        strcpy(b.letra,(value.c_str()));
-                        std::cout<<"Hola inf\n";
-                    }
-
-                    if(k==2){
-                        std::cout<<"value 2: "<<value<<std::endl;
-                        b.numero=atoi((value.c_str()));                       
-                    }
-                    if(k==2 && juego.coordenadas(*b.letra, b.numero)){
-                        std::cout<<"Hola 1\n";
-                        if(juego.estaVisitada(*b.letra, b.numero)==true){
-                            printf("casilla ya visitada\n");
-                        }
-                        std::cout<<"Hola 2\n";
-                        juego.MatrizPinchar(*b.letra, b.numero);
-                        b.turno=0;
-                    }
+                    std::cout<<"Hola 2\n";
+                    juego.MatrizPinchar(*b.letra, atoi(b.numero));
+                    b.turno=0;
                 }
             }else if(strncmp(dato,"PONER-BANDERA ", 16)==0){
-                buffer.str(dato);
-                for(int k=0;k<3;k++){
-                    buffer>>value;
-                    if(k==0 && strcmp(value.c_str(),"PONER-BANDERA ")!=0){
-                        bzero(dato,sizeof(dato));
-                        strcpy(dato, "Error, comando de PONER-BANDERA no reconocido\n"); /*REVISAR*/
-                        send(b.socket,dato,sizeof(dato),0);
-                    }
-                    if(k==1){
-                        std::cout<<"value 1: "<<value<<std::endl;
-                        strcpy(b.letra,(value.c_str()));
-                        std::cout<<"Hola inf\n";
+                b.letra[0]=dato[10];
+                b.numero[0]=dato[12];
+                if(juego.coordenadas(*b.letra, atoi(b.numero))){
+                    if(juego.estaVisitada(*b.letra, atoi(b.numero))==true){
+                        printf("casilla ya visitada\n");
                     }
 
-                    if(k==2){
-                        std::cout<<"value 2: "<<value<<std::endl;
-                        b.numero=atoi((value.c_str()));                       
-                    }
-
-                    if(k==2 && juego.coordenadas(*b.letra, b.numero)){
-                        if(juego.estaVisitada(*b.letra, b.numero)==true){
-                            printf("casilla ya visitada\n");
-                        }
-
-                        juego.MatrizBandera(*b.letra, b.numero, 'A');
-                        b.turno=0;
-                    }
+                    juego.MatrizBandera(*b.letra, atoi(b.numero), 'A');
+                    b.turno=0;
                 }
             }else if(strcmp(dato,"SALIR\n") == 0){
                 send(b.socket, "Desconexion servidor\n", strlen("Desconexion servidor\n"),0);
