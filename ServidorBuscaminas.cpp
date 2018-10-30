@@ -28,10 +28,13 @@ struct clients{
         int estado;
         int login;
         int turno; // JUgador A o B
-        int partida;
+        int partida=-1;
 };
 
 std::vector<clients>cola;
+
+std::vector<Buscaminas> juegos;
+
 
 //SERVIDOR CHAT BUSCAMINAS
 
@@ -45,7 +48,7 @@ bool registrado(char *nombre, char *password);
 void jugar(clients a, clients b);
 
 int main(){
-  
+    juegos.resize(10);
 	/*---------------------------------------------------- 
 		Descriptor del socket y dato de datos                
 	-----------------------------------------------------*/
@@ -68,7 +71,7 @@ int main(){
     clients clientes[MAX_CLIENTS];
     clients clientesAux[MAX_CLIENTS];
     //contadores
-    int i,j,k, id=0, oper1, oper2, verificacion=-1;
+    int i,j,k, id=0, oper1, oper2, verificacion=0;
 	int recibidos;
     char identificador[MSG_SIZE];
     
@@ -199,7 +202,7 @@ int main(){
                                     std::istringstream buffer;
                                     std::cout<<BIBLUE<<"Se recibe del cliente "<<BIYELLOW<<clientes[j].socket<<RESET<<": "<<dato<<std::endl;
                                     if(recibidos > 0){
-                                        if((strncmp(dato,"INICIAR-PARTIDA", 15)==0) && (registrado(clientes[j].user, clientes[j].password)) && (clientes[j].login==1) && verificacion==0){
+                                        if((strncmp(dato,"INICIAR-PARTIDA", 15)==0) && (registrado(clientes[j].user, clientes[j].password)) && (clientes[j].login==1) && verificacion==2){
                                             bzero(dato,sizeof(dato));
                                             strcpy(dato, "Puede Jugar\n");
                                             send(clientes[j].socket,dato,sizeof(dato),0);
@@ -209,8 +212,7 @@ int main(){
                                             Si hay 4 jugadores, se guardarán 2 clientes con el mismo id de partida
                                             y los otros dos con id++*/
                                             std::cout<<"Size: "<<cola.size()<<std::endl;
-                                            for(int x=0;x<=cola.size();x++){
-                                                if(cola.size()>1){
+                                            if(cola.size()>1){
                                                     size=(int)cola.size();
                                                     oper1=(size-size);
                                                     oper2=(size-(size-1));
@@ -220,17 +222,37 @@ int main(){
                                                     cola.pop_back();
                                                     clientesAux[oper1].partida=id;
                                                     clientesAux[oper2].partida=id;
-                                                    jugar(clientesAux[oper1], clientesAux[oper2]);
+                                                    //jugar(clientesAux[oper1], clientesAux[oper2]);
+                                                    
+
+                                                    ////cosas nuevas
+                                                    juegos.resize(juegos.size()+1);
+                                                    juegos[id].crearMatrizEscondida();
+                                                    bzero(dato,sizeof(dato));
+                                                    strcpy(dato, "Empieza el juego, eres el jugador A");
+                                                    send( clientesAux[oper1].socket,dato,sizeof(dato),0);
+                                                    bzero(dato,sizeof(dato));
+                                                    strcpy(dato, "Empieza el juego, eres el jugador B");
+                                                    send( clientesAux[oper2].socket,dato,sizeof(dato),0);
+
+                                                    clientesAux[oper1].turno=1;
+                                                    clientesAux[oper2].turno=0;
+                                                    bzero(dato,sizeof(dato));
+                                                    strcpy(dato, "Es tu turno");
+                                                    send( clientesAux[oper1].socket,dato,sizeof(dato),0);
+                                                    bzero(dato,sizeof(dato));
+                                                    strcpy(dato, "Es de el turno de A");
+                                                    send(clientesAux[oper2].socket,dato,sizeof(dato),0);
+                                                    juegos[id].mostrarMatrizMostrar(); //cambiar para que se muestre en los clientes
+                                                    ////
                                                     id++;
-                                                }
                                             }
-                                            
-                                        }else if((strncmp(dato,"INICIAR-PARTIDA", 15)==0) && (!registrado(clientes[j].user, clientes[j].password)) && verificacion==0){
+                                        }else if((strncmp(dato,"INICIAR-PARTIDA", 15)==0) && (!registrado(clientes[j].user, clientes[j].password)) && verificacion==2){
                                             bzero(dato,sizeof(dato));
                                             strcpy(dato, "Debe registrarse para poder jugar\n");
                                             send(clientes[j].socket,dato,sizeof(dato),0);
                                         
-                                        }else if((strncmp(dato,"INICIAR-PARTIDA", 15)==0) && (registrado(clientes[j].user, clientes[j].password)) && clientes[j].login==0 && verificacion==0){
+                                        }else if((strncmp(dato,"INICIAR-PARTIDA", 15)==0) && (registrado(clientes[j].user, clientes[j].password)) && clientes[j].login==0 && verificacion==2){
                                                 std::cout<<"El usuario "<<clientes[j].user<<" no se ha logueado aún\n";
                                         }
 
@@ -276,7 +298,7 @@ int main(){
                                                         bzero(dato,sizeof(dato));
                                                         strcpy(dato, "Se ha logueado correctamente!\n");
                                                         send(clientes[j].socket,dato,sizeof(dato),0);
-                                                        verificacion=0;
+                                                        verificacion=2;
                                                         clientes[j].login=1;
                                                     }
                                                 }else{
@@ -373,7 +395,41 @@ int main(){
                                                 FD_CLR(clientes[j].socket,&readfds);
                                             }
                                                 close(sd);
+                                        }else if(strncmp(dato,"DESCUBRIR ", 10)==0){ //FALTARIA poner que esta en partida pero no lo queria meter xq falla ya al no meterse
+                                        printf("holi\n");
+                                        int otrocliente;
+                                        if (clientes[j].turno==1){
+                                            clientes[j].letra[0]=dato[10];
+                                            clientes[j].numero[0]=dato[12];
+                                            std::cout<<"letra: "<<clientes[j].letra[0]<<" numero: "<<clientes[j].numero[0]<<std::endl;
+                                            if(juegos[clientes[j].partida].coordenadas(*clientes[j].letra, atoi(clientes[j].numero))==true){
+                                                std::cout<<"Hola 1\n";
+                                                if(juegos[clientes[j].partida].estaVisitada(*clientes[j].letra, atoi(clientes[j].numero))==true){
+                                                    printf("casilla ya visitada\n");
+                                                }
+                                                std::cout<<"Hola 2\n";
+                                                juegos[clientes[j].partida].MatrizPinchar(*clientes[j].letra, atoi(clientes[j].numero));
+                                                clientes[j].turno=0;
+
+                                                ///no se si esto xd
+                                                for (int s = 0; s < numClientes ; ++s){
+                                                    if (clientes[j].partida==clientes[s].partida)
+                                                    {
+                                                       clientes[s].turno=1;
+                                                       otrocliente=s;
+                                                    }
+                                                }
+                                                ////
+                                                juegos[clientes[j].partida].mostrarMatrizMostrar();
+                                            }
+                                        }else
+                                        {
+                                                bzero(dato,sizeof(dato));
+                                                strcpy(dato, "-Err No es su turno\n");
+                                                send(clientes[otrocliente].socket,dato,sizeof(dato),0);
                                         }
+
+                                    }
                                     }else if(recibidos==0){
                                     printf("El socket %d, ha introducido ctrl+c\n", i);
                                     //Eliminar ese socket
