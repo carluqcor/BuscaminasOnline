@@ -77,17 +77,18 @@ class Buscaminas{
 		bool estaVisitada(char x, int y);
 		bool estaVisitada2(int x , int y );
 
-		void MatrizPinchar(char x, int y); //Cambia la matriz a mostrar
-		void MatrizBandera(char x, int y , char jugador);
+		bool MatrizPinchar(char x, int y); //Cambia la matriz a mostrar
+		int MatrizBandera(char x, int y , char jugador);
 		void crearMatrizEscondida();
 		void mostrarMatrizEscondida();
 		void mostrarMatrizMostrar();
 		bool coordenadas(char x, int y);
 		void buscaminasGame();
 		void Encontrar();
-		void ganar();
+		bool ganar();
 		punto abrirZeros(int m , int n , punto aux);
 		void MatrizString(char *aux);
+		void ConvertirMatrizStringAInt(char *aux);
 
 
 		void buscaminasJuego(char jugador);

@@ -92,9 +92,9 @@ PLACE(1,0);
                 if(strcmp(buffer,"Demasiados clientes conectados\n") == 0)
                     fin =1;
                 
-                if(strcmp(buffer,"Desconexion servidor\n") == 0)
+                else if(strcmp(buffer,"Desconexion servidor\n") == 0)
                     fin =1;
-                if(strcmp(buffer,"Vuelve a la cola\n") == 0)
+                else if(strcmp(buffer,"Vuelve a la cola\n") == 0)
                     partida=0;
             }
         }else{

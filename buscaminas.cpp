@@ -95,13 +95,15 @@ bool Buscaminas::estaVisitada2(int x, int y)
 
 
 
-void Buscaminas::ganar()
+bool Buscaminas::ganar()
 {
 	if(getEncontradas()==10)
 	{
-		printf("Has ganado");
-		exit(0);
+		//printf("Has ganado");
+		//exit(0);
+		return true;
 	}
+	return false;
 }
 
 void Buscaminas::Encontrar()
@@ -206,7 +208,7 @@ void Buscaminas::crearMatrizEscondida(){
 	setMatrizEscondida(MatrizAux);
 }
 
-void Buscaminas::MatrizPinchar(char x, int y){
+bool Buscaminas::MatrizPinchar(char x, int y){
 	punto xd;
 	std::vector<std::vector<int > > MatrizAux1=getMatrizEscondida();
 	std::vector<std::vector<int > > MatrizAux2=getMatrizMostrar();
@@ -219,15 +221,17 @@ void Buscaminas::MatrizPinchar(char x, int y){
 
 	if (MatrizAux2[y][a]==-1)
 	{
-		printf("Has explotado una mina, has perdido\n" );
-		exit(0); //supongo que habra que salirse con el cliente o algo, esto es provicional
+		//printf("Has explotado una mina, has perdido\n" );
+		//exit(0); //supongo que habra que salirse con el cliente o algo, esto es provicional
 		//llamar a funcion que le diga al cliente que se vaya o yo que se xd
+		return false;
 	}
 
 	if (MatrizAux2[y][a]==0)
 	{
 		xd=abrirZeros(y, a , xd);
 	}
+	return true;
 }
 
 punto Buscaminas::abrirZeros(int m , int n , punto aux)
@@ -267,20 +271,53 @@ punto Buscaminas::abrirZeros(int m , int n , punto aux)
 	return aux;
 }
 
-void Buscaminas::MatrizBandera(char x, int y, char jugador){
+int Buscaminas::MatrizBandera(char x, int y, char jugador){
 	std::vector<std::vector<int > > MatrizAux ;
 	std::vector<std::vector<int > > MatrizAux2 ;
 	MatrizAux=getMatrizMostrar();
 	MatrizAux2=getMatrizEscondida();
 	int a=getX(x);
-
-	if (jugador=='A'){
-		MatrizAux[y][a]=-3;
-	}else if (jugador=='B'){
-		MatrizAux[y][a]=-4;
+	int ret;
+	if (estaVisitada2(y,a)==true)
+	{
+		if(MatrizAux[y][a]==-5)
+		{
+			ret=-1;
+		}
+		else if(jugador=='A')
+		{
+			if (MatrizAux[y][a]==-3)
+			{
+				ret= -1;
+			}
+			else
+			{
+				MatrizAux[y][a]=-5;
+				ret= 0;
+			}
+		}
+		else
+		{
+			if (MatrizAux[y][a]==-4)
+			{
+				ret= -1;
+			}
+			else
+			{
+				MatrizAux[y][a]=-5;
+				ret= 0;
+			}
+		}
 	}
 	else{
-		MatrizAux[y][a]=-5;
+		if (jugador=='A'){
+			MatrizAux[y][a]=-3;
+			ret= 0;
+		}else if (jugador=='B'){
+			MatrizAux[y][a]=-4;
+			ret= 0;
+		}
+		
 	}
 	setMatrizMostrar(MatrizAux);
 
@@ -288,10 +325,14 @@ void Buscaminas::MatrizBandera(char x, int y, char jugador){
 	if(MatrizAux2[y][a]==-1)
 	{
 		Encontrar();
-		ganar();
+		if(ganar()==true)
+		{
+			ret=1;
+		}
 	}
 
 	visitar(y,a);
+	return ret;
 }
 
 
@@ -466,23 +507,55 @@ void Buscaminas::buscaminasCharVisitadas(char aux[101]){
 
 void Buscaminas::MatrizString(char *aux){
     int i, j;
-    int cont=0;
+    int count=0;
     std::vector<std::vector<int> > MatrizAux = getMatrizMostrar();
     for(i = 0; i < 10; i++){
         for(j=0 ; j<10; j++){
-            if(MatrizAux[i][j]==-2){
-            	aux[cont]='-';
-            }else{
-        		aux[cont]=MatrizAux[i][j];
-        	}
+            if (MatrizAux[i][j]==-2){
+				aux[count]='-';
+			}
+			else if (MatrizAux[i][j]==-1){
+				aux[count]='*';
+			}
+			else if (MatrizAux[i][j]==-3){
+				aux[count]='A';
+			}
+			else if (MatrizAux[i][j]==-4){
+				aux[count]='B';
+			}
+			else if (MatrizAux[i][j]==-5){
+				aux[count]='C';
+			}else{
+				aux[count]=MatrizAux[i][j];
+			}
 
-            cont++;
-            aux[cont]=',';
-        	cont++;
+            count++;
+            if(j!=9)
+            {
+            aux[count]=',';
+        	count++;
+        	}
         }
-        aux[cont]=';';
-        cont++;
+        aux[count]=';';
+        count++;
     }
     
-    std::cout<<"Aux: "<<aux<<std::endl;
+    //std::cout<<"Aux: "<<aux<<std::endl;
+}
+
+	
+void Buscaminas::ConvertirMatrizStringAInt(char *aux){
+    int i, j;
+    int count=0;
+    for(i = 0; i < 10; i++){
+        for(j=0 ; j<10; j++){
+        	if(aux[count]==',')
+        		std::cout<<"\t";
+        	else if(aux[count]!=';')
+        		std::cout<<(int)aux[count];
+        }
+        if(aux[count]==';')
+        	std::cout<<"\n";
+    }  
+    //std::cout<<"Aux: "<<aux<<std::endl;
 }
