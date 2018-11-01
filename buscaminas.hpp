@@ -4,8 +4,7 @@
 #include <vector>
 #include <string>
 
-struct punto
-{
+struct punto{
 	int x;
 	int y;
 };
@@ -56,24 +55,57 @@ class Buscaminas{
 		}
 
 		//Funciones GET
-		inline std::vector<std::vector<int> > getMatrizEscondida(){return MatrizEscondida;}
-		inline std::vector<std::vector<int> > getMatrizMostrar(){return MatrizMostrar;}
-		inline std::vector<std::vector<int> > getVisitadas(){return Visitadas;}
+		inline std::vector<std::vector<int> > getMatrizEscondida(){
+			return MatrizEscondida;
+		}
+		
+		inline std::vector<std::vector<int> > getMatrizMostrar(){
+			return MatrizMostrar;
+		}
+		
+		inline std::vector<std::vector<int> > getVisitadas(){
+			return Visitadas;
+		}
+		
 		//FUNCIONES GET DE A B AB, NO SE MODIFICAN
 		int getX(char x);
+		
 		int getNumero(int y);
-		int getMinas(){return bombas_;}
-		int getEncontradas(){return encontradas_;}
+		
+		inline int getMinas(){
+			return bombas_;
+		}
+		
+		inline int getEncontradas(){
+			return encontradas_;
+		}
 
 
 		//Funciones SET
-		inline void setBombas(int bombas){bombas_=bombas;}
-		inline void setMatrizEscondida(std::vector<std::vector<int> > MatrizEscondidaAux){MatrizEscondida=MatrizEscondidaAux;}
-		inline void setMatrizMostrar(std::vector<std::vector<int> > MatrizMostrarAux){MatrizMostrar=MatrizMostrarAux;}
-		inline void setVisitadas(std::vector<std::vector<int> > MatrizAux){Visitadas=MatrizAux;}
-		inline void setEncontradas(int encontradas){encontradas_=encontradas;}
+		inline void setBombas(int bombas){
+			bombas_=bombas;}
 
-		inline void visitar(int x, int y){Visitadas[x][y]=1;}
+		inline void setMatrizEscondida(std::vector<std::vector<int> > MatrizEscondidaAux){
+			MatrizEscondida=MatrizEscondidaAux;
+		}
+
+		inline void setMatrizMostrar(std::vector<std::vector<int> > MatrizMostrarAux){
+			MatrizMostrar=MatrizMostrarAux;
+		}
+
+		inline void setVisitadas(std::vector<std::vector<int> > MatrizAux){
+			Visitadas=MatrizAux;
+		}
+
+		inline void setEncontradas(int encontradas){
+			encontradas_=encontradas;
+		}
+
+
+		inline void visitar(int x, int y){
+			Visitadas[x][y]=1;
+		}
+		
 		bool estaVisitada(char x, int y);
 		bool estaVisitada2(int x , int y );
 
@@ -89,10 +121,6 @@ class Buscaminas{
 		punto abrirZeros(int m , int n , punto aux);
 		void MatrizString(char *aux);
 		void ConvertirMatrizStringAInt(char *aux);
-
-
-		void buscaminasJuego(char jugador);
-
 		void buscaminasCharEscondida(char aux[101]);
 		void buscaminasCharMostrar(char aux[101]);
 		void buscaminasCharVisitadas(char aux[101]);

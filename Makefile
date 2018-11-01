@@ -111,32 +111,6 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named ServidorB
-
-# Build rule for target.
-ServidorB: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 ServidorB
-.PHONY : ServidorB
-
-# fast build rule for target.
-ServidorB/fast:
-	$(MAKE) -f CMakeFiles/ServidorB.dir/build.make CMakeFiles/ServidorB.dir/build
-.PHONY : ServidorB/fast
-
-#=============================================================================
-# Target rules for targets named buscaminasOnline
-
-# Build rule for target.
-buscaminasOnline: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 buscaminasOnline
-.PHONY : buscaminasOnline
-
-# fast build rule for target.
-buscaminasOnline/fast:
-	$(MAKE) -f CMakeFiles/buscaminasOnline.dir/build.make CMakeFiles/buscaminasOnline.dir/build
-.PHONY : buscaminasOnline/fast
-
-#=============================================================================
 # Target rules for targets named ClienteB
 
 # Build rule for target.
@@ -148,6 +122,19 @@ ClienteB: cmake_check_build_system
 ClienteB/fast:
 	$(MAKE) -f CMakeFiles/ClienteB.dir/build.make CMakeFiles/ClienteB.dir/build
 .PHONY : ClienteB/fast
+
+#=============================================================================
+# Target rules for targets named ServidorB
+
+# Build rule for target.
+ServidorB: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 ServidorB
+.PHONY : ServidorB
+
+# fast build rule for target.
+ServidorB/fast:
+	$(MAKE) -f CMakeFiles/ServidorB.dir/build.make CMakeFiles/ServidorB.dir/build
+.PHONY : ServidorB/fast
 
 ClienteBuscaminas.o: ClienteBuscaminas.cpp.o
 
@@ -209,9 +196,8 @@ buscaminas.o: buscaminas.cpp.o
 
 # target to build an object file
 buscaminas.cpp.o:
-	$(MAKE) -f CMakeFiles/ServidorB.dir/build.make CMakeFiles/ServidorB.dir/buscaminas.cpp.o
-	$(MAKE) -f CMakeFiles/buscaminasOnline.dir/build.make CMakeFiles/buscaminasOnline.dir/buscaminas.cpp.o
 	$(MAKE) -f CMakeFiles/ClienteB.dir/build.make CMakeFiles/ClienteB.dir/buscaminas.cpp.o
+	$(MAKE) -f CMakeFiles/ServidorB.dir/build.make CMakeFiles/ServidorB.dir/buscaminas.cpp.o
 .PHONY : buscaminas.cpp.o
 
 buscaminas.i: buscaminas.cpp.i
@@ -220,9 +206,8 @@ buscaminas.i: buscaminas.cpp.i
 
 # target to preprocess a source file
 buscaminas.cpp.i:
-	$(MAKE) -f CMakeFiles/ServidorB.dir/build.make CMakeFiles/ServidorB.dir/buscaminas.cpp.i
-	$(MAKE) -f CMakeFiles/buscaminasOnline.dir/build.make CMakeFiles/buscaminasOnline.dir/buscaminas.cpp.i
 	$(MAKE) -f CMakeFiles/ClienteB.dir/build.make CMakeFiles/ClienteB.dir/buscaminas.cpp.i
+	$(MAKE) -f CMakeFiles/ServidorB.dir/build.make CMakeFiles/ServidorB.dir/buscaminas.cpp.i
 .PHONY : buscaminas.cpp.i
 
 buscaminas.s: buscaminas.cpp.s
@@ -231,37 +216,9 @@ buscaminas.s: buscaminas.cpp.s
 
 # target to generate assembly for a file
 buscaminas.cpp.s:
-	$(MAKE) -f CMakeFiles/ServidorB.dir/build.make CMakeFiles/ServidorB.dir/buscaminas.cpp.s
-	$(MAKE) -f CMakeFiles/buscaminasOnline.dir/build.make CMakeFiles/buscaminasOnline.dir/buscaminas.cpp.s
 	$(MAKE) -f CMakeFiles/ClienteB.dir/build.make CMakeFiles/ClienteB.dir/buscaminas.cpp.s
+	$(MAKE) -f CMakeFiles/ServidorB.dir/build.make CMakeFiles/ServidorB.dir/buscaminas.cpp.s
 .PHONY : buscaminas.cpp.s
-
-main.o: main.cpp.o
-
-.PHONY : main.o
-
-# target to build an object file
-main.cpp.o:
-	$(MAKE) -f CMakeFiles/buscaminasOnline.dir/build.make CMakeFiles/buscaminasOnline.dir/main.cpp.o
-.PHONY : main.cpp.o
-
-main.i: main.cpp.i
-
-.PHONY : main.i
-
-# target to preprocess a source file
-main.cpp.i:
-	$(MAKE) -f CMakeFiles/buscaminasOnline.dir/build.make CMakeFiles/buscaminasOnline.dir/main.cpp.i
-.PHONY : main.cpp.i
-
-main.s: main.cpp.s
-
-.PHONY : main.s
-
-# target to generate assembly for a file
-main.cpp.s:
-	$(MAKE) -f CMakeFiles/buscaminasOnline.dir/build.make CMakeFiles/buscaminasOnline.dir/main.cpp.s
-.PHONY : main.cpp.s
 
 # Help Target
 help:
@@ -271,9 +228,8 @@ help:
 	@echo "... depend"
 	@echo "... rebuild_cache"
 	@echo "... edit_cache"
-	@echo "... ServidorB"
-	@echo "... buscaminasOnline"
 	@echo "... ClienteB"
+	@echo "... ServidorB"
 	@echo "... ClienteBuscaminas.o"
 	@echo "... ClienteBuscaminas.i"
 	@echo "... ClienteBuscaminas.s"
@@ -283,9 +239,6 @@ help:
 	@echo "... buscaminas.o"
 	@echo "... buscaminas.i"
 	@echo "... buscaminas.s"
-	@echo "... main.o"
-	@echo "... main.i"
-	@echo "... main.s"
 .PHONY : help
 
 

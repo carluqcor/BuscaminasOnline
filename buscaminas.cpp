@@ -48,46 +48,34 @@ int Buscaminas::getX(char x){
 			break;
 
 		default:
-			std::cout<<"Error, letra no reconocida, escribala en mayúscula en el rango de A a J\n\n";
 			return -1;
 			break;
 	}
 }
 
-bool Buscaminas::estaVisitada(char x , int y)
-{
+bool Buscaminas::estaVisitada(char x , int y){
 	
 	std::vector< std::vector<int > > aux;
 	int a=getX(x);
 	aux=getVisitadas();
 	
-
-	if(aux[y][a]==0)
-	{
-		
+	if(aux[y][a]==0){
 		return false;
-	}
-	else
-	{
-		
+	}else{
 		return true;
 	}
 }
 
-bool Buscaminas::estaVisitada2(int x, int y)
-{
+bool Buscaminas::estaVisitada2(int x, int y){
 	
 	std::vector< std::vector<int > > aux;
 	aux=getVisitadas();
 	
 
-	if(aux[x][y]==0)
-	{
+	if(aux[x][y]==0){
 		
 		return false;
-	}
-	else
-	{
+	}else{
 		
 		return true;
 	}
@@ -95,12 +83,8 @@ bool Buscaminas::estaVisitada2(int x, int y)
 
 
 
-bool Buscaminas::ganar()
-{
-	if(getEncontradas()==10)
-	{
-		//printf("Has ganado");
-		//exit(0);
+bool Buscaminas::ganar(){
+	if(getEncontradas()==10){
 		return true;
 	}
 	return false;
@@ -118,7 +102,6 @@ int Buscaminas::getNumero(int y){
 	if(y>=0 && y<10)
 		return 1;
 	else{
-		std::cout<<"Error, elija un número en el rango de 0 a 9\n\n";
 		return -1;
 	}
 }
@@ -126,20 +109,14 @@ int Buscaminas::getNumero(int y){
 bool Buscaminas::coordenadas(char x, int y){
 	int comprobador;
 	comprobador=getX(x);
-	std::cout<<"Comprobador: "<<comprobador<<std::endl;
-	std::cout<<"upper: "<<std::isupper(x)<<std::endl;
 	if((std::isupper(x))!=0 && (comprobador!=-1)){
 		comprobador=getNumero(y);
-		std::cout<<"Comprobador: "<<comprobador<<" y: "<<y<<std::endl;
 		if((comprobador!=-1)){
-			std::cout<<"Hola soy true\n";
 			return true;
 		}else{
-			std::cout<<"Hola soy false 1\n";
 			return false;
 		}
 	}else{
-		std::cout<<"Hola soy false 2\n";
 		return false;
 	}
 }
@@ -172,11 +149,8 @@ void Buscaminas::crearMatrizEscondida(){
 		}
 	}while(contador!=getMinas());
 
-	std::cout<<"Se han colocado las minas\n";
 	setMatrizEscondida(MatrizAux);
-	mostrarMatrizEscondida();
 	
-
 	for(i=0;i<10;i++){
 		for(j=0;j<10;j++){
 			if(MatrizAux[i][j]!=-1){
@@ -192,19 +166,9 @@ void Buscaminas::crearMatrizEscondida(){
 					}
 				}
 				MatrizAux[i][j]=minas;
-				//std::cout<<"Se han colocado un valor\n";
 			}
 		}
 	}
-	//std::cout<<"Se han colocado un valor\n";
-	/*
-	for(i = 0; i < 10; i++){
-		for(j=0 ; j<10; j++){
-			std::cout<<"|"<<MatrizAux[i][j]<<"|\t";
-		}
-		std::cout<<"\n";
-	}
-	*/
 	setMatrizEscondida(MatrizAux);
 }
 
@@ -217,26 +181,19 @@ bool Buscaminas::MatrizPinchar(char x, int y){
 	setMatrizMostrar(MatrizAux2);
 
 	visitar(y , a);
-	//printf("%d  %d\n",MatrizAux2[y][a] ,  MatrizAux1[y][a]);
 
-	if (MatrizAux2[y][a]==-1)
-	{
-		//printf("Has explotado una mina, has perdido\n" );
-		//exit(0); //supongo que habra que salirse con el cliente o algo, esto es provicional
+	if (MatrizAux2[y][a]==-1){
 		//llamar a funcion que le diga al cliente que se vaya o yo que se xd
 		return false;
 	}
 
-	if (MatrizAux2[y][a]==0)
-	{
+	if (MatrizAux2[y][a]==0){
 		xd=abrirZeros(y, a , xd);
 	}
 	return true;
 }
 
-punto Buscaminas::abrirZeros(int m , int n , punto aux)
-{
-
+punto Buscaminas::abrirZeros(int m , int n , punto aux){
 	std::vector<std::vector<int > > MatrizAux2=getMatrizEscondida();
 	std::vector<std::vector<int > > MatrizAux;
 	int a ,b ;
@@ -353,8 +310,7 @@ void Buscaminas::mostrarMatrizMostrar(){
 	int i, j;
 	char letras[11] ="ABCDEFGHIJ";
 	std::cout<<"|"<<" "<<"|\t";
-	for (int l = 0; l < 10; ++l)
-	{
+	for (int l = 0; l < 10; ++l){
 		std::cout<<"|"<<letras[l]<<"|\t";
 	}
 	std::cout<<std::endl;
@@ -426,49 +382,7 @@ void Buscaminas::buscaminasGame(){
 	}
 }
 
-
-void Buscaminas::buscaminasJuego(char jugador)
-{
-	int aux=0, a, y, opcion;
-	char s, x;
-
-	
-	mostrarMatrizMostrar();
-
-	while(aux==0){
-		coordenadas(x,y);
-
-		if(estaVisitada(x,y)==true)
-		{
-			printf("casilla ya visitada\n");
-		}
-		else{
-		std::cout<<"Pulse 1 para descubrir pulse 2 para poner una bandera\n";
-		std::cin>>opcion;
-		switch(opcion){
-			case 1:
-				MatrizPinchar(x, y);
-				mostrarMatrizMostrar();
-				aux==1;
-				break;
-
-			case 2:
-				MatrizBandera(x, y, jugador);
-				mostrarMatrizMostrar();
-				aux==1;
-				break;
-
-			default: 
-				std::cout<<"Opción errónea, eliga entre 1 o 2\n";
-				break;
-			}	
-		}
-	}
-}
-
-
-void Buscaminas::buscaminasCharEscondida(char aux[101])
-{
+void Buscaminas::buscaminasCharEscondida(char aux[101]){
 	std::vector<std::vector<int> > MatrizAux = getMatrizEscondida();
 	int a=0;
 	for (int i = 0; i < 10; ++i){
@@ -509,6 +423,8 @@ void Buscaminas::MatrizString(char *aux){
     int i, j;
     int count=0;
     std::vector<std::vector<int> > MatrizAux = getMatrizMostrar();
+    aux[count]='(';
+    count++;
     for(i = 0; i < 10; i++){
         for(j=0 ; j<10; j++){
             if (MatrizAux[i][j]==-2){
@@ -539,23 +455,4 @@ void Buscaminas::MatrizString(char *aux){
         aux[count]=';';
         count++;
     }
-    
-    //std::cout<<"Aux: "<<aux<<std::endl;
-}
-
-	
-void Buscaminas::ConvertirMatrizStringAInt(char *aux){
-    int i, j;
-    int count=0;
-    for(i = 0; i < 10; i++){
-        for(j=0 ; j<10; j++){
-        	if(aux[count]==',')
-        		std::cout<<"\t";
-        	else if(aux[count]!=';')
-        		std::cout<<(int)aux[count];
-        }
-        if(aux[count]==';')
-        	std::cout<<"\n";
-    }  
-    //std::cout<<"Aux: "<<aux<<std::endl;
 }
