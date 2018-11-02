@@ -84,54 +84,61 @@ PLACE(1,0);
             bzero(buffer,sizeof(buffer));
             recv(sd,buffer,sizeof(buffer),0);
             
-            if(strncmp(buffer, "(", 1)!=0){
-                std::cout<<buffer<<std::endl;
-            }
-            if(strcmp(buffer,"-Err. Demasiados clientes conectados\n") == 0)
-                fin =1;
-            
-            else if(strcmp(buffer,"-Err. Desconexion servidor\n") == 0)
-                fin =1;
-            else if(strncmp(buffer, "(", 1)==0){
-                
-                int count=1;
-
-                std::cout<<"|"<<" "<<"|\t";
-                
-                for (int l = 0; l < 10; ++l){
-                    std::cout<<"|"<<letras[l]<<"|\t";
+            //printf("\n%s\n",buffer);
+            if(strcmp(buffer, "Esta en partida")==0){
+                Buscaminas juego(escondida, mostrar, visitadas, encontradas);
+            }else{
+                if(strncmp(buffer, "(", 1)!=0){
+                    std::cout<<BIRED<<"\nSe recibe del servidor "<<RESET<<buffer<<std::endl;
                 }
-                std::cout<<std::endl;
-                for(int i = 0; i<10; i++){
-                    std::cout<<"|"<<i<<"|\t";
-                    for(int j=0 ; j<10; j++){
-                        if(buffer[count]=='-'){
-                            std::cout<<"|"<<buffer[count]<<"|\t";
-                            count+=2;
-                        }
-                        else if(buffer[count]=='A'){
-                            std::cout<<"|"<<buffer[count]<<"|\t";
-                            count+=2;
-                        }
+                if(strcmp(buffer,"Demasiados clientes conectados\n") == 0)
+                    fin =1;
+                
+                else if(strcmp(buffer,"Desconexion servidor\n") == 0)
+                    fin =1;
+                else if(strcmp(buffer,"Vuelve a la cola\n") == 0)
+                    partida=0;
+                else if(strncmp(buffer, "(", 1)==0){
+                    
+                    int count=1;
 
-                        else if(buffer[count]=='B'){
-                            std::cout<<"|"<<buffer[count]<<"|\t";
-                            count+=2;
-                        }
+                    std::cout<<"|"<<" "<<"|\t";
+                    
+                    for (int l = 0; l < 10; ++l){
+                        std::cout<<"|"<<letras[l]<<"|\t";
+                    }
+                    std::cout<<std::endl;
+                    for(int i = 0; i<10; i++){
+                        std::cout<<"|"<<i<<"|\t";
+                        for(int j=0 ; j<10; j++){
+                            if(buffer[count]=='-'){
+                                std::cout<<"|"<<buffer[count]<<"|\t";
+                                count+=2;
+                            }
+                            else if(buffer[count]=='A'){
+                                std::cout<<"|"<<buffer[count]<<"|\t";
+                                count+=2;
+                            }
 
-                        else if(buffer[count]=='C'){
-                            std::cout<<"|AB|\t";
-                            count+=2;
-                        }
+                            else if(buffer[count]=='B'){
+                                std::cout<<"|"<<buffer[count]<<"|\t";
+                                count+=2;
+                            }
 
-                        else if((buffer[count]!='-') && (buffer[count]!='A') && (buffer[count]!='B') && (buffer[count]!='C') && (buffer[count]!=',') && (buffer[count]!=';')){
-                            std::cout<<"|"<<(int)buffer[count]<<"|\t";
-                            count+=2; 
-                        }
-                    }                                     
-                    std::cout<<"\n";
+                            else if(buffer[count]=='C'){
+                                std::cout<<"|AB|\t";
+                                count+=2;
+                            }
+
+                            else if((buffer[count]!='-') && (buffer[count]!='A') && (buffer[count]!='B') && (buffer[count]!='C') && (buffer[count]!=',') && (buffer[count]!=';')){
+                                std::cout<<"|"<<(int)buffer[count]<<"|\t";
+                                count+=2; 
+                            }
+                        }                                     
+                        std::cout<<"\n";
+                    }
+                    std::cout<<"\n"; 
                 }
-                std::cout<<"\n"; 
             }
         }else{
             //He introducido información por teclado
