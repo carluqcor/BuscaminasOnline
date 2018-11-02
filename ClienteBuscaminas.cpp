@@ -16,8 +16,10 @@
 
 
 int main(int argc, char *argv[]){
-std::cout << CLEAR_SCREEN;
-PLACE(1,0); 
+
+    std::cout << CLEAR_SCREEN;
+    PLACE(1,0);
+
     /*---------------------------------------------------- 
         Descriptor del socket y buffer de datos                
     -----------------------------------------------------*/
@@ -48,11 +50,15 @@ PLACE(1,0);
         Se rellenan los campos de la estructura con la IP del 
         servidor y el puerto del servicio que solicitamos
     -------------------------------------------------------------------*/
-    sockname.sin_family = AF_INET;
-    sockname.sin_port = htons(2000);
-    sockname.sin_addr.s_addr =  inet_addr("127.0.0.1");
-    //sockname.sin_addr.s_addr =  inet_addr(argv[1]);
-
+    if(!argv[1]){
+        sockname.sin_family = AF_INET;
+        sockname.sin_port = htons(2000);
+        sockname.sin_addr.s_addr =  inet_addr("127.0.0.1");
+    }else{ 
+        sockname.sin_family = AF_INET;
+        sockname.sin_port = htons(2000);
+        sockname.sin_addr.s_addr =  inet_addr(argv[1]);
+    }
     /* ------------------------------------------------------------------
         Se solicita la conexión con el servidor
     -------------------------------------------------------------------*/
